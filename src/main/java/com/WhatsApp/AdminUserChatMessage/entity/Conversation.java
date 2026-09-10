@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -27,19 +28,22 @@ public class Conversation {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "adminId")
+    @JoinColumn(name = "adminId", nullable = false)
     @JsonIgnore
     private User admin;
 
     @ManyToOne
-    @JoinColumn(name = "clientId")
+    @JoinColumn(name = "clientId", nullable = false)
     @JsonIgnore
     private User client;
 
+    @Column(nullable=false)
     private LocalDateTime createdAt;
+
+    private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "conversation")
     @JsonIgnore
-    private List<ChatMessage> chatMessages;
+    private List<ChatMessage> chatMessages = new ArrayList<>();
 
 }
