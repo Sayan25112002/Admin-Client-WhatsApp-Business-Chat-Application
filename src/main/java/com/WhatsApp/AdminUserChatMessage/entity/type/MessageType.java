@@ -1,4 +1,4 @@
-package com.WhatsApp.AdminUserChatMessage.entity.enums;
+package com.WhatsApp.AdminUserChatMessage.entity.type;
 
 public enum MessageType {
     JOIN,
