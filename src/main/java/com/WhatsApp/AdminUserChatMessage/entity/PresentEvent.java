@@ -18,11 +18,12 @@ public class PresentEvent {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "userId")
+    @JoinColumn(name = "userId", nullable = false)
     @JsonIgnore
     private User user;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private MessageType messageType;
 
     private LocalDateTime createdAt;
