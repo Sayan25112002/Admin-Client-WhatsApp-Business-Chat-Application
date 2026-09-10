@@ -1,6 +1,7 @@
 package com.WhatsApp.AdminUserChatMessage.dto.responseDto;
 
 import com.WhatsApp.AdminUserChatMessage.entity.type.Role;
+import com.WhatsApp.AdminUserChatMessage.entity.type.UserStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,9 +11,15 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class VerifyOtpResponseDto {
+public class LoginResponseDto {
 
     private String message;
+
+    private String tokenType;
+
+    private String accessToken;
+
+    private String refreshToken;
 
     private Boolean verified;
 
@@ -25,5 +32,7 @@ public class VerifyOtpResponseDto {
     private String contact;
 
     private Role role;
+
+    private UserStatus userStatus;
 
 }
