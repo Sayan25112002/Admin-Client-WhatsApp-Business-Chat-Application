@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Setter
+@Table(name = "broadcastMessage")
 public class BroadCastMessage {
 
     @Id
@@ -18,13 +19,15 @@ public class BroadCastMessage {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name="userId")
+    @JoinColumn(name="userId",nullable=false)
     @JsonIgnore
     private User user;
 
+    @JoinColumn(nullable=false)
     private String content;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable=false)
     private MessageType messageType;
 
     private LocalDateTime createdAt;
