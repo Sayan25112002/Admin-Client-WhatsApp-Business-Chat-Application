@@ -18,20 +18,23 @@ public class ChatMessage {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "conversationId")
+    @JoinColumn(name = "conversationId", nullable = false)
     @JsonIgnore
     private Conversation conversation;
 
     @ManyToOne
-    @JoinColumn(name = "userId")
+    @JoinColumn(name = "userId", nullable = false)
     @JsonIgnore
     private User user;
 
+    @Column(nullable=false)
     private String content;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable=false)
     private MessageType messageType;
 
+    @Column(nullable=false)
     private LocalDateTime createdAt;
 
 }
