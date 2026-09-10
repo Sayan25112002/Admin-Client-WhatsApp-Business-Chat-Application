@@ -23,7 +23,7 @@ public class BroadCastMessage {
     @JsonIgnore
     private User user;
 
-    @JoinColumn(nullable=false)
+    @Column(nullable=false)
     private String content;
 
     @Enumerated(EnumType.STRING)
