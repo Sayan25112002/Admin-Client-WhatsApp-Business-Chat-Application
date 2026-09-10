@@ -1,4 +1,9 @@
 package com.WhatsApp.AdminUserChatMessage.repository;
 
-public class RefreshTokenRepository {
+import com.WhatsApp.AdminUserChatMessage.entity.RefreshToken;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface RefreshTokenRepository extends JpaRepository<RefreshToken,Long> {
 }
