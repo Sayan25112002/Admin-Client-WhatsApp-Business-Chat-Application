@@ -1,6 +1,6 @@
 package com.WhatsApp.AdminUserChatMessage.entity;
 
-import com.WhatsApp.AdminUserChatMessage.entity.enums.MessageType;
+import com.WhatsApp.AdminUserChatMessage.entity.type.MessageType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
