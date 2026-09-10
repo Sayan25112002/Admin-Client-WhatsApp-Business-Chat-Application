@@ -17,6 +17,7 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
+@Table(name="appUser")
 public class User implements UserDetails {
 
     @Id
@@ -24,6 +25,8 @@ public class User implements UserDetails {
     private Long id;
 
     private String name;
+
+    private String contact;
 
     private String email;
 
