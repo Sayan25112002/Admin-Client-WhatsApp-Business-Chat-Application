@@ -25,6 +25,6 @@ public class PresentEvent {
     @Enumerated(EnumType.STRING)
     private MessageType messageType;
 
-    private LocalDateTime dateTime;
+    private LocalDateTime createdAt;
 
 }
