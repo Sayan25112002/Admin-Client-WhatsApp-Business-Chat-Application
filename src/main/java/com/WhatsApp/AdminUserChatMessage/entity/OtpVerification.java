@@ -1,9 +1,6 @@
 package com.WhatsApp.AdminUserChatMessage.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -18,14 +15,19 @@ public class OtpVerification {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, unique = true)
     private String verificationId;
 
+    @Column(nullable = false)
     private String email;
 
+    @Column(nullable = false)
     private String contact;
 
+    @Column(nullable = false)
     private String emailOtp;
 
+    @Column(nullable = false)
     private String contactOtp;
 
     private Boolean emailVerified;
