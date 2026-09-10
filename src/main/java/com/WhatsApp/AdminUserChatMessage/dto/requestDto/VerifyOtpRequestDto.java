@@ -17,4 +17,8 @@ public class VerifyOtpRequestDto {
 
     private String emailOtp;
 
+    private String captchaId;
+
+    private String captchaAnswer;
+
 }
