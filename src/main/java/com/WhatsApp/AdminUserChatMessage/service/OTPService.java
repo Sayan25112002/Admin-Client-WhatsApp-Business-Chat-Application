@@ -1,4 +1,9 @@
 package com.WhatsApp.AdminUserChatMessage.service;
 
-public class OTPService {
+public interface OTPService {
+
+    String generateOtp(String userName);
+
+    String validateOtpAndGetUserName(String preAuthToken, String otp);
+
 }
