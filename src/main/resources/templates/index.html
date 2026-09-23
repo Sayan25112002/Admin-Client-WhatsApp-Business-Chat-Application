@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp Chat - Login</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: #d9fdd3;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Main container */
+
+        .auth-container {
+            width: 950px;
+            min-height: 600px;
+            background: #ffffff;
+            display: flex;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.18);
+        }
+
+        /* Left side */
+
+        .branding-section {
+            width: 45%;
+            background: #075e54;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .whatsapp-icon {
+            width: 110px;
+            height: 110px;
+            border: 5px solid white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 55px;
+            margin-bottom: 25px;
+        }
+
+        .branding-section h1 {
+            font-size: 34px;
+            margin-bottom: 15px;
+        }
+
+        .branding-section p {
+            font-size: 16px;
+            line-height: 1.6;
+            opacity: 0.9;
+        }
+
+        /* Right side */
+
+        .form-section {
+            width: 55%;
+            padding: 45px 55px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .form-section h2 {
+            color: #075e54;
+            font-size: 30px;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #667781;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        /* Forms */
+
+        .auth-form {
+            display: none;
+        }
+
+        .auth-form.active {
+            display: block;
+        }
+
+        .input-group {
+            margin-bottom: 18px;
+        }
+
+        .input-group label {
+            display: block;
+            color: #333;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 7px;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper input {
+            width: 100%;
+            padding: 13px 45px 13px 14px;
+            border: 1px solid #ccd0d2;
+            border-radius: 7px;
+            outline: none;
+            font-size: 15px;
+            transition: 0.2s;
+        }
+
+        .input-wrapper input:focus {
+            border-color: #25d366;
+            box-shadow: 0 0 0 2px rgba(37, 211, 102, 0.12);
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #667781;
+            font-size: 14px;
+            user-select: none;
+        }
+
+        /* CAPTCHA */
+
+        .captcha-container {
+            margin-bottom: 18px;
+        }
+
+        .captcha-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .captcha-image {
+            width: 200px;
+            height: 60px;
+            object-fit: contain;
+            border: 1px solid #ccd0d2;
+            border-radius: 6px;
+            background: #f0f2f5;
+        }
+
+        .refresh-captcha {
+            width: 45px;
+            height: 45px;
+            border: none;
+            border-radius: 50%;
+            background: #25d366;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .refresh-captcha:hover {
+            background: #128c7e;
+        }
+
+        /* Buttons */
+
+        .submit-btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 7px;
+            background: #25d366;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 5px;
+            transition: 0.2s;
+        }
+
+        .submit-btn:hover {
+            background: #128c7e;
+        }
+
+        .submit-btn:disabled {
+            background: #9fd9b4;
+            cursor: not-allowed;
+        }
+
+        /* Links */
+
+        .switch-text {
+            text-align: center;
+            margin-top: 22px;
+            color: #667781;
+            font-size: 14px;
+        }
+
+        .switch-link {
+            color: #128c7e;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .switch-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Error / success */
+
+        .message {
+            display: none;
+            padding: 10px 12px;
+            border-radius: 6px;
+            margin-bottom: 18px;
+            font-size: 14px;
+        }
+
+        .message.error {
+            display: block;
+            background: #fdecea;
+            color: #b42318;
+            border: 1px solid #f5c2c0;
+        }
+
+        .message.success {
+            display: block;
+            background: #e8f7ee;
+            color: #137333;
+            border: 1px solid #b7dfc5;
+        }
+
+        /* Mobile */
+
+        @media (max-width: 768px) {
+
+            body {
+                padding: 20px;
+            }
+
+            .auth-container {
+                width: 100%;
+                min-height: auto;
+                flex-direction: column;
+            }
+
+            .branding-section {
+                width: 100%;
+                padding: 30px 20px;
+            }
+
+            .whatsapp-icon {
+                width: 75px;
+                height: 75px;
+                font-size: 38px;
+                margin-bottom: 15px;
+            }
+
+            .branding-section h1 {
+                font-size: 26px;
+            }
+
+            .form-section {
+                width: 100%;
+                padding: 35px 25px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="auth-container">
+
+    <!-- LEFT SIDE -->
+
+    <div class="branding-section">
+
+        <div class="whatsapp-icon">
+            ☎
+        </div>
+
+        <h1>WhatsApp Chat</h1>
+
+        <p>
+            Connect with your administrator,
+            communicate in real time and
+            stay connected.
+        </p>
+
+    </div>
+
+
+    <!-- RIGHT SIDE -->
+
+    <div class="form-section">
+
+        <!-- ================= LOGIN ================= -->
+
+        <div id="loginFormContainer" class="auth-form active">
+
+            <h2>Welcome Back</h2>
+
+            <p class="subtitle">
+                Login to continue chatting
+            </p>
+
+            <div id="loginMessage" class="message"></div>
+
+            <form id="loginForm">
+
+                <div class="input-group">
+
+                    <label for="loginEmail">
+                        Email
+                    </label>
+
+                    <div class="input-wrapper">
+
+                        <input
+                                type="email"
+                                id="loginEmail"
+                                placeholder="Enter your email"
+                                autocomplete="email"
+                                required
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <div class="input-group">
+
+                    <label for="loginPassword">
+                        Password
+                    </label>
+
+                    <div class="input-wrapper">
+
+                        <input
+                                type="password"
+                                id="loginPassword"
+                                placeholder="Enter your password"
+                                autocomplete="current-password"
+                                required
+                        >
+
+                        <span
+                                class="toggle-password"
+                                onclick="togglePassword('loginPassword', this)"
+                        >
+                            Show
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <button
+                        type="submit"
+                        class="submit-btn"
+                        id="loginButton"
+                >
+                    Login
+                </button>
+
+            </form>
+
+
+            <div class="switch-text">
+
+                Don't have an account?
+
+                <span
+                        class="switch-link"
+                        onclick="showRegister()"
+                >
+                    Register
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================= REGISTER ================= -->
+
+        <div id="registerFormContainer" class="auth-form">
+
+            <h2>Create Account</h2>
+
+            <p class="subtitle">
+                Register before starting a chat
+            </p>
+
+            <div id="registerMessage" class="message"></div>
+
+            <form id="registerForm">
+
+                <div class="input-group">
+
+                    <label for="registerName">
+                        Name
+                    </label>
+
+                    <div class="input-wrapper">
+
+                        <input
+                                type="text"
+                                id="registerName"
+                                placeholder="Enter your name"
+                                autocomplete="name"
+                                required
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <div class="input-group">
+
+                    <label for="registerEmail">
+                        Email
+                    </label>
+
+                    <div class="input-wrapper">
+
+                        <input
+                                type="email"
+                                id="registerEmail"
+                                placeholder="Enter your email"
+                                autocomplete="email"
+                                required
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <div class="input-group">
+
+                    <label for="registerPassword">
+                        Password
+                    </label>
+
+                    <div class="input-wrapper">
+
+                        <input
+                                type="password"
+                                id="registerPassword"
+                                placeholder="Create a password"
+                                autocomplete="new-password"
+                                required
+                        >
+
+                        <span
+                                class="toggle-password"
+                                onclick="togglePassword('registerPassword', this)"
+                        >
+                            Show
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="input-group">
+
+                    <label for="confirmPassword">
+                        Confirm Password
+                    </label>
+
+                    <div class="input-wrapper">
+
+                        <input
+                                type="password"
+                                id="confirmPassword"
+                                placeholder="Confirm your password"
+                                autocomplete="new-password"
+                                required
+                        >
+
+                        <span
+                                class="toggle-password"
+                                onclick="togglePassword('confirmPassword', this)"
+                        >
+                            Show
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- CAPTCHA -->
+
+                <div class="captcha-container">
+
+                    <label>
+                        CAPTCHA
+                    </label>
+
+                    <div class="captcha-row">
+
+                        <img
+                                id="captchaImage"
+                                class="captcha-image"
+                                src=""
+                                alt="CAPTCHA"
+                        >
+
+                        <button
+                                type="button"
+                                class="refresh-captcha"
+                                onclick="refreshCaptcha()"
+                                title="Refresh CAPTCHA"
+                        >
+                            ↻
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <div class="input-group">
+
+                    <label for="captchaText">
+                        Enter CAPTCHA
+                    </label>
+
+                    <div class="input-wrapper">
+
+                        <input
+                                type="text"
+                                id="captchaText"
+                                placeholder="Enter CAPTCHA"
+                                maxlength="6"
+                                autocomplete="off"
+                                required
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <button
+                        type="submit"
+                        class="submit-btn"
+                        id="registerButton"
+                >
+                    Register
+                </button>
+
+            </form>
+
+
+            <div class="switch-text">
+
+                Already have an account?
+
+                <span
+                        class="switch-link"
+                        onclick="showLogin()"
+                >
+                    Login
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    /*
+     * ============================
+     * CONFIGURATION
+     * ============================
+     */
+
+    const API_BASE_URL = "http://localhost:8080";
+
+
+    /*
+     * ============================
+     * SHOW LOGIN
+     * ============================
+     */
+
+    function showLogin() {
+
+        document
+            .getElementById("loginFormContainer")
+            .classList.add("active");
+
+        document
+            .getElementById("registerFormContainer")
+            .classList.remove("active");
+
+        clearMessages();
+    }
+
+
+    /*
+     * ============================
+     * SHOW REGISTER
+     * ============================
+     */
+
+    function showRegister() {
+
+        document
+            .getElementById("registerFormContainer")
+            .classList.add("active");
+
+        document
+            .getElementById("loginFormContainer")
+            .classList.remove("active");
+
+        clearMessages();
+
+        refreshCaptcha();
+    }
+
+
+    /*
+     * ============================
+     * PASSWORD SHOW / HIDE
+     * ============================
+     */
+
+    function togglePassword(inputId, element) {
+
+        const input =
+            document.getElementById(inputId);
+
+        if (input.type === "password") {
+
+            input.type = "text";
+            element.textContent = "Hide";
+
+        } else {
+
+            input.type = "password";
+            element.textContent = "Show";
+        }
+    }
+
+
+    /*
+     * ============================
+     * MESSAGE
+     * ============================
+     */
+
+    function showMessage(elementId, message, type) {
+
+        const element =
+            document.getElementById(elementId);
+
+        element.textContent = message;
+
+        element.className =
+            "message " + type;
+    }
+
+
+    function clearMessages() {
+
+        const loginMessage =
+            document.getElementById("loginMessage");
+
+        const registerMessage =
+            document.getElementById("registerMessage");
+
+        loginMessage.textContent = "";
+        loginMessage.className = "message";
+
+        registerMessage.textContent = "";
+        registerMessage.className = "message";
+    }
+
+
+    /*
+     * ============================
+     * CAPTCHA
+     * ============================
+     */
+
+    async function refreshCaptcha() {
+
+        try {
+
+            const response =
+                await fetch(
+                    API_BASE_URL + "/auth/captcha"
+                );
+
+            if (!response.ok) {
+                throw new Error("Failed to load CAPTCHA");
+            }
+
+            const data =
+                await response.json();
+
+            document
+                .getElementById("captchaImage")
+                .src = data.captchaImage;
+
+        } catch (error) {
+
+            console.error(
+                "CAPTCHA error:",
+                error
+            );
+
+            document
+                .getElementById("captchaImage")
+                .alt = "Unable to load CAPTCHA";
+        }
+    }
+
+
+    /*
+     * ============================
+     * LOGIN
+     * ============================
+     */
+
+    document
+        .getElementById("loginForm")
+        .addEventListener("submit", async function(event) {
+
+            event.preventDefault();
+
+            const email =
+                document
+                    .getElementById("loginEmail")
+                    .value
+                    .trim();
+
+            const password =
+                document
+                    .getElementById("loginPassword")
+                    .value;
+
+            const button =
+                document.getElementById("loginButton");
+
+            button.disabled = true;
+            button.textContent = "Logging in...";
+
+            try {
+
+                const response =
+                    await fetch(
+                        API_BASE_URL + "/auth/login",
+                        {
+                            method: "POST",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                            credentials: "include",
+
+                            body: JSON.stringify({
+                                email: email,
+                                password: password
+                            })
+                        }
+                    );
+
+                const data =
+                    await response.json();
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        data.message ||
+                        "Login failed"
+                    );
+                }
+
+                showMessage(
+                    "loginMessage",
+                    "Login successful!",
+                    "success"
+                );
+
+                console.log(
+                    "Login response:",
+                    data
+                );
+
+                /*
+                 * If your backend returns an access token
+                 * in the response, handle it here.
+                 *
+                 * If you use an HTTP-only cookie,
+                 * you don't need to store the token
+                 * in localStorage.
+                 */
+
+                // window.location.href = "/chat.html";
+
+            } catch (error) {
+
+                showMessage(
+                    "loginMessage",
+                    error.message,
+                    "error"
+                );
+
+            } finally {
+
+                button.disabled = false;
+                button.textContent = "Login";
+            }
+
+        });
+
+
+    /*
+     * ============================
+     * REGISTRATION
+     * ============================
+     */
+
+    document
+        .getElementById("registerForm")
+        .addEventListener("submit", async function(event) {
+
+            event.preventDefault();
+
+            const name =
+                document
+                    .getElementById("registerName")
+                    .value
+                    .trim();
+
+            const email =
+                document
+                    .getElementById("registerEmail")
+                    .value
+                    .trim();
+
+            const password =
+                document
+                    .getElementById("registerPassword")
+                    .value;
+
+            const confirmPassword =
+                document
+                    .getElementById("confirmPassword")
+                    .value;
+
+            const captchaText =
+                document
+                    .getElementById("captchaText")
+                    .value
+                    .trim();
+
+            const button =
+                document.getElementById("registerButton");
+
+
+            /*
+             * Password validation
+             */
+
+            if (password !== confirmPassword) {
+
+                showMessage(
+                    "registerMessage",
+                    "Passwords do not match.",
+                    "error"
+                );
+
+                return;
+            }
+
+
+            /*
+             * CAPTCHA validation
+             */
+
+            if (captchaText.length !== 6) {
+
+                showMessage(
+                    "registerMessage",
+                    "Please enter the 6-character CAPTCHA.",
+                    "error"
+                );
+
+                return;
+            }
+
+
+            button.disabled = true;
+            button.textContent = "Registering...";
+
+
+            try {
+
+                const response =
+                    await fetch(
+                        API_BASE_URL + "/auth/register",
+                        {
+                            method: "POST",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                            body: JSON.stringify({
+                                name: name,
+                                email: email,
+                                password: password,
+                                captchaText: captchaText
+                            })
+                        }
+                    );
+
+
+                const data =
+                    await response.json();
+
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        data.message ||
+                        "Registration failed"
+                    );
+                }
+
+
+                showMessage(
+                    "registerMessage",
+                    "Registration successful! You can now login.",
+                    "success"
+                );
+
+
+                document
+                    .getElementById("registerForm")
+                    .reset();
+
+
+                refreshCaptcha();
+
+
+                /*
+                 * After successful registration,
+                 * you can switch to login.
+                 */
+
+                // setTimeout(showLogin, 1500);
+
+
+            } catch (error) {
+
+                showMessage(
+                    "registerMessage",
+                    error.message,
+                    "error"
+                );
+
+                refreshCaptcha();
+
+            } finally {
+
+                button.disabled = false;
+                button.textContent = "Register";
+            }
+
+        });
+
+
+    /*
+     * Load CAPTCHA when page opens
+     */
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        function() {
+
+            refreshCaptcha();
+
+        }
+    );
+
+</script>
+
+</body>
+</html>
