@@ -45,32 +45,25 @@ public class AuthUtil {
                 .compact();
     }
 
-    public String getUserNameFromToken(String token) {
-        Claims claims = Jwts.parser()
+    public Claims getClaimsFromToken(String token) {
+        return Jwts.parser()
                 .verifyWith(getSecretKey())
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
-        return claims.getSubject();
+    }
+
+    public String getEmailFromToken(String token) {
+        return getClaimsFromToken(token).getSubject();
     }
 
     public Date getExpirationDateFromToken(String token) {
-        Claims claims = Jwts.parser()
-                .verifyWith(getSecretKey())
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
-        return claims.getExpiration();
+        return getClaimsFromToken(token).getExpiration();
     }
 
     public Boolean isTokenExpired(String token) {
         try {
-            Claims claims = Jwts.parser()
-                    .verifyWith(getSecretKey())
-                    .build()
-                    .parseSignedClaims(token)
-                    .getPayload();
-            return claims.getExpiration().before(new Date());
+            return getClaimsFromToken(token).getExpiration().before(new Date());
         }
         catch (Exception e) {
             return false;
@@ -78,11 +71,6 @@ public class AuthUtil {
     }
 
     public String getTokenType(String token) {
-        Claims claims = Jwts.parser()
-                .verifyWith(getSecretKey())
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
-        return claims.get("tokenType").toString();
+        return getClaimsFromToken(token).get("tokenType").toString();
     }
 }
