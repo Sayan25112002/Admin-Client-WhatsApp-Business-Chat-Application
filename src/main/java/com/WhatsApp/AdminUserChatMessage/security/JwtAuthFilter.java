@@ -64,12 +64,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 writeErrorMessage(request, response, "Only Access Token Allowed");
                 return;
             }
-            String email = claims.getSubject();
-            if (email == null) {
-                writeErrorMessage(request, response, "Email Not Found");
-                return;
-            }
-            User user = userRepository.findByUsername(email).orElseThrow(() -> new UsernameNotFoundException("Invalid JWT Token"));
+            Long userId = Long.parseLong(claims.get("userId").toString());
+            User user = userRepository.findById(userId).orElseThrow(() -> new UsernameNotFoundException("No User found with userId: " + userId));
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
             filterChain.doFilter(request, response);
