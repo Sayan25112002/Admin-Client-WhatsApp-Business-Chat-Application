@@ -21,6 +21,9 @@ public class Captcha {
     @Column(nullable = false)
     private String captchaAnswer;
 
+    @Column(nullable = false, columnDefinition = "TEXT")
+    private String captchaImage;
+
     @Column(nullable = false)
     private LocalDateTime expiresAt;
 
