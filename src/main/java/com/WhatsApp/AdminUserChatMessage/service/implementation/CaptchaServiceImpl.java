@@ -73,12 +73,12 @@ public class CaptchaServiceImpl implements CaptchaService {
 
     @Override
     public CaptchaResponseDto generateImageCaptcha() {
-        List<Captcha> activeCaptcha = captchaRepository.findAll();
-        activeCaptcha.forEach(captcha -> {
+        List<Captcha> existingCaptcha = captchaRepository.findAll();
+        existingCaptcha.forEach(captcha -> {
             captcha.setIsValid(false);
             captcha.setExpiresAt(LocalDateTime.now());
         });
-        captchaRepository.saveAll(activeCaptcha);
+        captchaRepository.saveAll(existingCaptcha);
         String captchaText = generateCaptchaText();
         BufferedImage image = generateCaptchaImage(captchaText);
         String imageBase64 = null;
@@ -89,7 +89,7 @@ public class CaptchaServiceImpl implements CaptchaService {
         }
         Captcha captcha = Captcha.builder()
                 .captchaId(UUID.randomUUID().toString())
-                .captchaAnswer(generateCaptchaText())
+                .captchaAnswer(captchaText)
                 .captchaImage(imageBase64)
                 .expiresAt(LocalDateTime.now().plusMinutes(5))
                 .build();
@@ -103,8 +103,11 @@ public class CaptchaServiceImpl implements CaptchaService {
             throw new InvalidCaptchaException("Captcha is Required");
         }
         Captcha captcha = captchaRepository.findByCaptchaId(captchaId).orElseThrow(()->new InvalidCaptchaException("Captcha Not Found"));
-        if(!captcha.getExpiresAt().isBefore(LocalDateTime.now())){
+        if(!captcha.getExpiresAt().isAfter(LocalDateTime.now())){
             throw new InvalidCaptchaException("Captcha Expired. Please request a new one");
+        }
+        if(!captcha.getCaptchaAnswer().equals(captchaAnswer)){
+            throw new InvalidCaptchaException("Invalid Captcha");
         }
         captcha.setIsValid(true);
         captcha.setIsVerified(true);
