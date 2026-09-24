@@ -23,4 +23,6 @@ public class RegisterRequestDto {
 
     private String captchaAnswer;
 
+    private String verificationId;
+
 }
