@@ -2,8 +2,10 @@ package com.WhatsApp.AdminUserChatMessage.service;
 
 public interface OTPService {
 
-    String generateOtp(String userName);
+    String generateOtp(String email, String contact);
 
-    String validateOtpAndGetUserName(String preAuthToken, String otp);
+    void validateEmailOtp(String verificationId, String otp);
+
+    void validateContactOtp(String verificationId, String otp);
 
 }
