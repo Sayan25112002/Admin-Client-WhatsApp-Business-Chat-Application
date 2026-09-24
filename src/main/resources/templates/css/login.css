@@ -1,0 +1,601 @@
+* {
+    box-sizing: border-box;
+}
+
+:root {
+    --whatsapp-green: #00a884;
+    --whatsapp-dark-green: #008f72;
+    --whatsapp-dark: #111b21;
+    --whatsapp-text: #3b4a54;
+    --whatsapp-muted: #667781;
+    --border: #d9e2e7;
+    --background: #d1d7db;
+    --danger: #d93025;
+    --white: #ffffff;
+}
+
+html,
+body {
+    margin: 0;
+    min-height: 100%;
+    font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+}
+
+body {
+    min-height: 100vh;
+    background: var(--background);
+}
+
+
+/* PAGE */
+
+.page {
+    min-height: 100vh;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 30px 18px;
+
+    background:
+            linear-gradient(
+                    to bottom,
+                    #00a884 0,
+                    #00a884 125px,
+                    #d1d7db 125px,
+                    #d1d7db 100%
+            );
+}
+
+
+/* MAIN CONTAINER */
+
+.auth-container {
+    width: 950px;
+    min-height: 610px;
+
+    display: grid;
+    grid-template-columns: 42% 58%;
+
+    background: white;
+
+    border-radius: 8px;
+
+    overflow: hidden;
+
+    box-shadow:
+            0 6px 24px rgba(0, 0, 0, 0.18);
+}
+
+
+/* LEFT PANEL */
+
+.brand-panel {
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;
+
+    padding: 50px;
+
+    color: white;
+
+    background:
+            radial-gradient(
+                    circle at 20% 20%,
+                    rgba(255,255,255,.10) 0 2px,
+                    transparent 3px
+            ),
+            #00a884;
+}
+
+
+.whatsapp-logo {
+    width: 85px;
+    height: 85px;
+
+    border-radius: 50%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: white;
+
+    color: var(--whatsapp-green);
+
+    font-size: 38px;
+
+    margin-bottom: 22px;
+}
+
+
+.brand-panel h1 {
+    margin: 0 0 12px;
+
+    font-size: 30px;
+
+    font-weight: 400;
+}
+
+
+.brand-panel p {
+    margin: 0;
+
+    max-width: 280px;
+
+    line-height: 1.6;
+
+    color: rgba(255,255,255,.9);
+}
+
+
+.dots {
+    display: flex;
+
+    gap: 7px;
+
+    margin-top: 30px;
+}
+
+
+.dots span {
+    width: 7px;
+    height: 7px;
+
+    border-radius: 50%;
+
+    background: rgba(255,255,255,.7);
+}
+
+
+/* LOGIN PANEL */
+
+.login-panel {
+    padding: 55px 70px;
+
+    display: flex;
+    flex-direction: column;
+
+    justify-content: center;
+}
+
+
+.mobile-brand {
+    display: none;
+}
+
+
+/* HEADING */
+
+.heading {
+    margin-bottom: 28px;
+}
+
+
+.heading h2 {
+    margin: 0 0 8px;
+
+    color: var(--whatsapp-dark);
+
+    font-size: 28px;
+
+    font-weight: 400;
+}
+
+
+.heading p {
+    margin: 0;
+
+    color: var(--whatsapp-muted);
+
+    font-size: 14px;
+}
+
+
+/* FORM */
+
+.form-group {
+    margin-bottom: 17px;
+}
+
+
+.form-group label {
+    display: block;
+
+    margin-bottom: 7px;
+
+    color: #41525d;
+
+    font-size: 13px;
+
+    font-weight: 600;
+}
+
+
+.form-group input,
+.captcha-container input {
+    width: 100%;
+
+    padding: 13px 14px;
+
+    border: 1px solid var(--border);
+
+    border-radius: 4px;
+
+    outline: none;
+
+    color: var(--whatsapp-dark);
+
+    font-size: 14px;
+
+    transition:
+            border-color .15s,
+            box-shadow .15s;
+}
+
+
+.form-group input:focus,
+.captcha-container input:focus {
+    border-color: var(--whatsapp-green);
+
+    box-shadow:
+            0 0 0 2px rgba(0,168,132,.10);
+}
+
+
+/* PASSWORD */
+
+.password-container {
+    position: relative;
+}
+
+
+.password-container input {
+    padding-right: 65px;
+}
+
+
+.password-container button {
+    position: absolute;
+
+    right: 8px;
+    top: 50%;
+
+    transform: translateY(-50%);
+
+    border: none;
+
+    background: transparent;
+
+    color: var(--whatsapp-dark-green);
+
+    cursor: pointer;
+
+    font-weight: 600;
+}
+
+
+/* ERROR */
+
+.form-group small,
+.captcha-container small {
+    display: block;
+
+    min-height: 15px;
+
+    margin-top: 4px;
+
+    color: var(--danger);
+
+    font-size: 11px;
+}
+
+
+/* CAPTCHA */
+
+.captcha-container {
+    padding: 14px;
+
+    margin: 5px 0 18px;
+
+    border: 1px solid var(--border);
+
+    border-radius: 6px;
+
+    background: #f7f9fa;
+}
+
+
+.captcha-header {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 10px;
+
+    color: var(--whatsapp-dark);
+
+    font-size: 13px;
+
+    font-weight: 600;
+}
+
+
+#refreshCaptcha {
+    width: 32px;
+    height: 30px;
+
+    border: 1px solid var(--border);
+
+    border-radius: 4px;
+
+    background: white;
+
+    color: var(--whatsapp-dark-green);
+
+    font-size: 20px;
+
+    cursor: pointer;
+}
+
+
+#refreshCaptcha:hover {
+    background: #eef8f5;
+}
+
+
+.captcha-image-container {
+    position: relative;
+
+    min-height: 105px;
+
+    margin-bottom: 10px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    overflow: hidden;
+
+    border: 1px solid #e1e6e9;
+
+    border-radius: 4px;
+
+    background: white;
+}
+
+
+.captcha-image-container img {
+    max-width: 100%;
+
+    height: 105px;
+
+    object-fit: contain;
+}
+
+
+#captchaLoading {
+    position: absolute;
+
+    color: var(--whatsapp-muted);
+
+    font-size: 12px;
+}
+
+
+/* MESSAGE */
+
+.message {
+    display: none;
+
+    margin-bottom: 15px;
+
+    padding: 10px 12px;
+
+    border-radius: 4px;
+
+    font-size: 13px;
+
+    line-height: 1.4;
+}
+
+
+.message.success {
+    display: block;
+
+    color: #075e54;
+
+    background: #e7f8f4;
+}
+
+
+.message.error {
+    display: block;
+
+    color: #9b1c1c;
+
+    background: #fff0f0;
+}
+
+
+/* BUTTON */
+
+.login-button {
+    width: 100%;
+
+    padding: 13px 16px;
+
+    border: none;
+
+    border-radius: 4px;
+
+    background: var(--whatsapp-green);
+
+    color: white;
+
+    font-size: 15px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+
+.login-button:hover {
+    background: var(--whatsapp-dark-green);
+}
+
+
+.login-button:disabled {
+    opacity: .7;
+
+    cursor: not-allowed;
+}
+
+
+/* SPINNER */
+
+.spinner {
+    display: none;
+
+    width: 16px;
+    height: 16px;
+
+    margin-left: 7px;
+
+    vertical-align: -3px;
+
+    border: 2px solid rgba(255,255,255,.45);
+
+    border-top-color: white;
+
+    border-radius: 50%;
+
+    animation: spin .7s linear infinite;
+}
+
+
+.login-button.loading .spinner {
+    display: inline-block;
+}
+
+
+@keyframes spin {
+
+    to {
+        transform: rotate(360deg);
+    }
+
+}
+
+
+/* REGISTER LINK */
+
+.switch-account {
+    margin-top: 22px;
+
+    text-align: center;
+
+    color: var(--whatsapp-muted);
+
+    font-size: 13px;
+}
+
+
+.switch-account a {
+    color: var(--whatsapp-dark-green);
+
+    font-weight: 600;
+
+    text-decoration: none;
+}
+
+
+.switch-account a:hover {
+    text-decoration: underline;
+}
+
+
+/* MOBILE */
+
+@media (max-width: 760px) {
+
+    .page {
+        padding: 0;
+
+        background: #f0f2f5;
+
+        align-items: stretch;
+    }
+
+
+    .auth-container {
+        width: 100%;
+
+        min-height: 100vh;
+
+        display: block;
+
+        border-radius: 0;
+
+        box-shadow: none;
+    }
+
+
+    .brand-panel {
+        display: none;
+    }
+
+
+    .login-panel {
+        min-height: 100vh;
+
+        padding: 35px 24px;
+
+        justify-content: flex-start;
+    }
+
+
+    .mobile-brand {
+        display: flex;
+
+        align-items: center;
+        justify-content: center;
+
+        gap: 10px;
+
+        margin-bottom: 40px;
+
+        color: var(--whatsapp-dark);
+
+        font-size: 22px;
+    }
+
+
+    .mobile-logo {
+        width: 42px;
+        height: 42px;
+
+        display: flex;
+
+        align-items: center;
+        justify-content: center;
+
+        border-radius: 50%;
+
+        background: var(--whatsapp-green);
+
+        color: white;
+
+        font-size: 20px;
+    }
+
+}

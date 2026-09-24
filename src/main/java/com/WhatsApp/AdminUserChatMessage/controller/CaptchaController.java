@@ -4,12 +4,11 @@ import com.WhatsApp.AdminUserChatMessage.dto.responseDto.CaptchaResponseDto;
 import com.WhatsApp.AdminUserChatMessage.service.CaptchaService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/auth")
 public class CaptchaController {
 
     private final CaptchaService captchaService;
@@ -19,7 +18,7 @@ public class CaptchaController {
         return ResponseEntity.ok(captchaService.generateImageCaptcha());
     }
 
-    @GetMapping("/validateCaptcha")
+    @PostMapping("/validateCaptcha")
     public ResponseEntity<Void> validateCaptcha(@RequestParam String captchaId, @RequestParam String captchaAnswer) {
         captchaService.validateCaptcha(captchaId, captchaAnswer);
         return ResponseEntity.ok().build();
