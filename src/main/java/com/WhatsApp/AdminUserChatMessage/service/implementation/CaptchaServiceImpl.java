@@ -58,9 +58,9 @@ public class CaptchaServiceImpl implements CaptchaService {
             int y = rnd.nextInt(height);
             g2d.fillOval(x, y, 2, 2);
         }
-        g2d.setFont(new Font("Times New Roman", Font.BOLD, 20));
+        g2d.setFont(new Font("Times New Roman", Font.BOLD, 30));
         g2d.setColor(Color.BLACK);
-        g2d.drawString(captchaText, 10, 30);
+        g2d.drawString(captchaText, 50, 50);
         g2d.dispose();
         return image;
     }
@@ -92,6 +92,7 @@ public class CaptchaServiceImpl implements CaptchaService {
                 .captchaAnswer(captchaText)
                 .captchaImage(imageBase64)
                 .expiresAt(LocalDateTime.now().plusMinutes(5))
+                .createdAt(LocalDateTime.now())
                 .build();
         captchaRepository.save(captcha);
         return new CaptchaResponseDto(captcha.getCaptchaId(), captcha.getCaptchaAnswer(), captcha.getCaptchaImage());
