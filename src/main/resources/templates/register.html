@@ -1,0 +1,1536 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Register - WhatsApp Chat</title>
+
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+
+            min-height: 100vh;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            background: #f0f2f5;
+        }
+
+
+        /* =========================
+           REGISTER CONTAINER
+        ========================== */
+
+        .register-container {
+            width: 100%;
+            padding: 30px 15px;
+        }
+
+
+        /* =========================
+           REGISTER CARD
+        ========================== */
+
+        .register-card {
+            width: 100%;
+            max-width: 450px;
+
+            margin: auto;
+
+            background: white;
+
+            padding: 35px;
+
+            border-radius: 12px;
+
+            box-shadow:
+                    0 5px 20px rgba(0, 0, 0, 0.12);
+        }
+
+
+        /* =========================
+           HEADING
+        ========================== */
+
+        .register-card h1 {
+            text-align: center;
+
+            margin-bottom: 8px;
+
+            font-size: 28px;
+        }
+
+        .subtitle {
+            text-align: center;
+
+            color: #777;
+
+            margin-bottom: 30px;
+        }
+
+
+        /* =========================
+           FORM
+        ========================== */
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label,
+        .captcha-section label,
+        .otp-group label {
+            display: block;
+
+            margin-bottom: 7px;
+
+            font-size: 14px;
+
+            font-weight: 600;
+        }
+
+
+        /* =========================
+           INPUT
+        ========================== */
+
+        input {
+            width: 100%;
+
+            padding: 12px;
+
+            border: 1px solid #ccc;
+
+            border-radius: 7px;
+
+            font-size: 14px;
+
+            outline: none;
+
+            transition: border-color 0.2s;
+        }
+
+        input:focus {
+            border-color: #25d366;
+        }
+
+
+        /* =========================
+           CAPTCHA
+        ========================== */
+
+        .captcha-section {
+            margin-bottom: 20px;
+        }
+
+        .captcha-row {
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+
+            margin-bottom: 10px;
+        }
+
+        #captchaImage {
+            width: 180px;
+
+            height: 60px;
+
+            object-fit: contain;
+
+            border: 1px solid #ddd;
+
+            border-radius: 6px;
+
+            background: #f5f5f5;
+        }
+
+        .refresh-button {
+            width: 45px;
+
+            height: 45px;
+
+            border: none;
+
+            border-radius: 50%;
+
+            background: #25d366;
+
+            color: white;
+
+            font-size: 24px;
+
+            cursor: pointer;
+        }
+
+        .refresh-button:hover {
+            background: #20bd5a;
+        }
+
+
+        /* =========================
+           BUTTONS
+        ========================== */
+
+        button {
+            font-family: inherit;
+        }
+
+        .primary-button,
+        .register-button {
+            width: 100%;
+
+            padding: 13px;
+
+            border: none;
+
+            border-radius: 7px;
+
+            font-size: 15px;
+
+            font-weight: 600;
+
+            cursor: pointer;
+
+            margin-top: 5px;
+        }
+
+        .primary-button {
+            background: #128c7e;
+
+            color: white;
+        }
+
+        .primary-button:hover {
+            background: #0d7569;
+        }
+
+        .register-button {
+            background: #25d366;
+
+            color: white;
+
+            margin-top: 20px;
+        }
+
+        .register-button:hover:not(:disabled) {
+            background: #20bd5a;
+        }
+
+        .register-button:disabled {
+            background: #b7b7b7;
+
+            cursor: not-allowed;
+        }
+
+
+        /* =========================
+           OTP
+        ========================== */
+
+        .otp-section {
+            margin-top: 25px;
+
+            padding: 20px;
+
+            border: 1px solid #ddd;
+
+            border-radius: 8px;
+
+            background: #fafafa;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .otp-title {
+            font-size: 17px;
+
+            font-weight: 600;
+
+            margin-bottom: 20px;
+
+            text-align: center;
+        }
+
+        .otp-group {
+            margin-bottom: 20px;
+        }
+
+        .otp-row {
+            display: flex;
+
+            gap: 8px;
+        }
+
+        .otp-row input {
+            flex: 1;
+        }
+
+        .verify-button {
+            width: 80px;
+
+            border: none;
+
+            border-radius: 6px;
+
+            background: #128c7e;
+
+            color: white;
+
+            cursor: pointer;
+
+            font-weight: 600;
+        }
+
+        .verify-button:hover {
+            background: #0d7569;
+        }
+
+
+        /* =========================
+           VERIFICATION STATUS
+        ========================== */
+
+        .verification-status {
+            display: block;
+
+            margin-top: 6px;
+
+            font-size: 13px;
+        }
+
+        .verification-success {
+            color: #198754;
+        }
+
+        .verification-error {
+            color: #dc3545;
+        }
+
+
+        /* =========================
+           MESSAGE
+        ========================== */
+
+        .message {
+            margin-top: 15px;
+
+            text-align: center;
+
+            font-size: 14px;
+
+            min-height: 20px;
+        }
+
+        .message-success {
+            color: #198754;
+        }
+
+        .message-error {
+            color: #dc3545;
+        }
+
+
+        /* =========================
+           LOGIN LINK
+        ========================== */
+
+        .login-link {
+            margin-top: 25px;
+
+            text-align: center;
+
+            font-size: 14px;
+
+            color: #666;
+        }
+
+        .login-link a {
+            color: #128c7e;
+
+            font-weight: 600;
+
+            text-decoration: none;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+
+
+        /* =========================
+           MOBILE
+        ========================== */
+
+        @media (max-width: 500px) {
+
+            .register-card {
+                padding: 25px 20px;
+            }
+
+            .otp-row {
+                flex-direction: column;
+            }
+
+            .verify-button {
+                width: 100%;
+
+                height: 42px;
+            }
+
+            #captchaImage {
+                width: 160px;
+            }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="register-container">
+
+    <div class="register-card">
+
+        <h1>Create Account</h1>
+
+        <p class="subtitle">
+            Register as a Client
+        </p>
+
+
+        <!-- =========================
+             REGISTRATION FORM
+        ========================== -->
+
+        <form id="registerForm">
+
+
+            <!-- NAME -->
+
+            <div class="form-group">
+
+                <label for="name">
+                    Name
+                </label>
+
+                <input
+                        type="text"
+                        id="name"
+                        placeholder="Enter your name"
+                        required>
+
+            </div>
+
+
+            <!-- CONTACT -->
+
+            <div class="form-group">
+
+                <label for="contact">
+                    Contact
+                </label>
+
+                <input
+                        type="tel"
+                        id="contact"
+                        placeholder="Enter your contact number"
+                        required>
+
+            </div>
+
+
+            <!-- EMAIL -->
+
+            <div class="form-group">
+
+                <label for="email">
+                    Email
+                </label>
+
+                <input
+                        type="email"
+                        id="email"
+                        placeholder="Enter your email"
+                        required>
+
+            </div>
+
+
+            <!-- PASSWORD -->
+
+            <div class="form-group">
+
+                <label for="password">
+                    Password
+                </label>
+
+                <input
+                        type="password"
+                        id="password"
+                        placeholder="Enter your password"
+                        required>
+
+            </div>
+
+
+            <!-- =========================
+                 CAPTCHA
+            ========================== -->
+
+            <div class="captcha-section">
+
+                <label>
+                    CAPTCHA
+                </label>
+
+                <div class="captcha-row">
+
+                    <img
+                            id="captchaImage"
+                            src=""
+                            alt="CAPTCHA">
+
+                    <button
+                            type="button"
+                            id="refreshCaptchaButton"
+                            class="refresh-button">
+                        ↻
+                    </button>
+
+                </div>
+
+                <input
+                        type="text"
+                        id="captchaAnswer"
+                        placeholder="Enter CAPTCHA"
+                        autocomplete="off"
+                        required>
+
+            </div>
+
+
+            <!-- GENERATE OTP -->
+
+            <button
+                    type="button"
+                    id="generateOtpButton"
+                    class="primary-button">
+
+                Generate OTP
+
+            </button>
+
+
+            <!-- =========================
+                 OTP SECTION
+            ========================== -->
+
+            <div
+                    id="otpSection"
+                    class="otp-section hidden">
+
+                <div class="otp-title">
+                    Verify your account
+                </div>
+
+
+                <!-- EMAIL OTP -->
+
+                <div class="otp-group">
+
+                    <label for="emailOtp">
+                        Email OTP
+                    </label>
+
+                    <div class="otp-row">
+
+                        <input
+                                type="text"
+                                id="emailOtp"
+                                placeholder="Enter email OTP"
+                                maxlength="6"
+                                autocomplete="off">
+
+                        <button
+                                type="button"
+                                id="verifyEmailOtpButton"
+                                class="verify-button">
+
+                            Verify
+
+                        </button>
+
+                    </div>
+
+                    <span
+                            id="emailVerificationStatus"
+                            class="verification-status">
+                    </span>
+
+                </div>
+
+
+                <!-- CONTACT OTP -->
+
+                <div class="otp-group">
+
+                    <label for="contactOtp">
+                        Contact OTP
+                    </label>
+
+                    <div class="otp-row">
+
+                        <input
+                                type="text"
+                                id="contactOtp"
+                                placeholder="Enter contact OTP"
+                                maxlength="6"
+                                autocomplete="off">
+
+                        <button
+                                type="button"
+                                id="verifyContactOtpButton"
+                                class="verify-button">
+
+                            Verify
+
+                        </button>
+
+                    </div>
+
+                    <span
+                            id="contactVerificationStatus"
+                            class="verification-status">
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- REGISTER -->
+
+            <button
+                    type="submit"
+                    id="registerButton"
+                    class="register-button"
+                    disabled>
+
+                Register
+
+            </button>
+
+
+            <!-- MESSAGE -->
+
+            <div
+                    id="message"
+                    class="message">
+            </div>
+
+        </form>
+
+
+        <!-- LOGIN -->
+
+        <div class="login-link">
+
+            Already have an account?
+
+            <a href="/login.html">
+                Login
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    const API_BASE_URL = "http://localhost:8080";
+
+
+    // ======================================================
+    // ELEMENTS
+    // ======================================================
+
+    const registerForm =
+        document.getElementById("registerForm");
+
+    const nameInput =
+        document.getElementById("name");
+
+    const contactInput =
+        document.getElementById("contact");
+
+    const emailInput =
+        document.getElementById("email");
+
+    const passwordInput =
+        document.getElementById("password");
+
+    const captchaImage =
+        document.getElementById("captchaImage");
+
+    const captchaAnswerInput =
+        document.getElementById("captchaAnswer");
+
+    const refreshCaptchaButton =
+        document.getElementById("refreshCaptchaButton");
+
+    const generateOtpButton =
+        document.getElementById("generateOtpButton");
+
+    const otpSection =
+        document.getElementById("otpSection");
+
+    const emailOtpInput =
+        document.getElementById("emailOtp");
+
+    const contactOtpInput =
+        document.getElementById("contactOtp");
+
+    const verifyEmailOtpButton =
+        document.getElementById("verifyEmailOtpButton");
+
+    const verifyContactOtpButton =
+        document.getElementById("verifyContactOtpButton");
+
+    const emailVerificationStatus =
+        document.getElementById("emailVerificationStatus");
+
+    const contactVerificationStatus =
+        document.getElementById("contactVerificationStatus");
+
+    const registerButton =
+        document.getElementById("registerButton");
+
+    const message =
+        document.getElementById("message");
+
+
+    // ======================================================
+    // VARIABLES
+    // ======================================================
+
+    let captchaId = null;
+
+    let verificationId = null;
+
+    let emailVerified = false;
+
+    let contactVerified = false;
+
+
+    // ======================================================
+    // PAGE LOAD
+    // ======================================================
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        () => {
+
+            generateCaptcha();
+
+        }
+    );
+
+
+    // ======================================================
+    // GENERATE CAPTCHA
+    // ======================================================
+
+    async function generateCaptcha() {
+
+        try {
+
+            message.textContent = "";
+
+            const response =
+                await fetch(
+                    `${API_BASE_URL}/generateImageCaptcha`,
+                    {
+                        method: "GET"
+                    }
+                );
+
+            if (!response.ok) {
+
+                throw new Error(
+                    `CAPTCHA generation failed: ${response.status}`
+                );
+            }
+
+            const data =
+                await response.json();
+
+            console.log(
+                "CAPTCHA Response:",
+                data
+            );
+
+
+            /*
+             * Expected response:
+             *
+             * {
+             *     captchaId: "...",
+             *     captchaImage: "data:image/png;base64,..."
+             * }
+             */
+
+            captchaId =
+                data.captchaId;
+
+            captchaImage.src =
+                data.captchaImage;
+
+
+            captchaAnswerInput.value = "";
+
+
+        } catch (error) {
+
+            console.error(
+                "CAPTCHA Error:",
+                error
+            );
+
+            showMessage(
+                "Unable to generate CAPTCHA.",
+                false
+            );
+        }
+    }
+
+
+    // ======================================================
+    // REFRESH CAPTCHA
+    // ======================================================
+
+    refreshCaptchaButton.addEventListener(
+        "click",
+        generateCaptcha
+    );
+
+
+    // ======================================================
+    // GENERATE OTP
+    // ======================================================
+
+    generateOtpButton.addEventListener(
+        "click",
+        async () => {
+
+            const name =
+                nameInput.value.trim();
+
+            const contact =
+                contactInput.value.trim();
+
+            const email =
+                emailInput.value.trim();
+
+            const password =
+                passwordInput.value.trim();
+
+            const captchaAnswer =
+                captchaAnswerInput.value.trim();
+
+
+            // -------------------------------
+            // BASIC VALIDATION
+            // -------------------------------
+
+            if (!name) {
+
+                showMessage(
+                    "Please enter your name.",
+                    false
+                );
+
+                return;
+            }
+
+
+            if (!contact) {
+
+                showMessage(
+                    "Please enter your contact number.",
+                    false
+                );
+
+                return;
+            }
+
+
+            if (!email) {
+
+                showMessage(
+                    "Please enter your email.",
+                    false
+                );
+
+                return;
+            }
+
+
+            if (!password) {
+
+                showMessage(
+                    "Please enter your password.",
+                    false
+                );
+
+                return;
+            }
+
+
+            if (!captchaAnswer) {
+
+                showMessage(
+                    "Please enter the CAPTCHA.",
+                    false
+                );
+
+                return;
+            }
+
+
+            if (!captchaId) {
+
+                showMessage(
+                    "CAPTCHA is not available. Please refresh it.",
+                    false
+                );
+
+                return;
+            }
+
+
+            try {
+
+                generateOtpButton.disabled = true;
+
+                generateOtpButton.textContent =
+                    "Generating OTP...";
+
+
+                // ==================================================
+                // VALIDATE CAPTCHA
+                // ==================================================
+
+                const captchaResponse =
+                    await fetch(
+                        `${API_BASE_URL}/validateCaptcha` +
+                        `?captchaId=${encodeURIComponent(captchaId)}` +
+                        `&captchaAnswer=${encodeURIComponent(captchaAnswer)}`,
+                        {
+                            method: "POST"
+                        }
+                    );
+
+
+                if (!captchaResponse.ok) {
+
+                    throw new Error(
+                        "Invalid CAPTCHA."
+                    );
+                }
+
+
+                // ==================================================
+                // GENERATE OTP
+                // ==================================================
+
+                const otpResponse =
+                    await fetch(
+                        `${API_BASE_URL}/generateOtp` +
+                        `?email=${encodeURIComponent(email)}` +
+                        `&contact=${encodeURIComponent(contact)}`,
+                        {
+                            method: "POST"
+                        }
+                    );
+
+
+                if (!otpResponse.ok) {
+
+                    const errorText =
+                        await otpResponse.text();
+
+                    throw new Error(
+                        errorText ||
+                        "Unable to generate OTP."
+                    );
+                }
+
+
+                /*
+                 * Your backend returns:
+                 *
+                 * ResponseEntity<String>
+                 *
+                 * Therefore the response body
+                 * should contain verificationId.
+                 */
+
+                verificationId =
+                    await otpResponse.text();
+
+                verificationId =
+                    verificationId.replace(
+                        /^"|"$/g,
+                        ""
+                    );
+
+
+                console.log(
+                    "Verification ID:",
+                    verificationId
+                );
+
+
+                // ==================================================
+                // SHOW OTP SECTION
+                // ==================================================
+
+                otpSection.classList.remove(
+                    "hidden"
+                );
+
+
+                showMessage(
+                    "OTP generated successfully. Check your email/contact.",
+                    true
+                );
+
+
+                // Disable Generate OTP after generation
+                generateOtpButton.disabled = true;
+
+            } catch (error) {
+
+                console.error(
+                    "OTP Error:",
+                    error
+                );
+
+                showMessage(
+                    error.message,
+                    false
+                );
+
+                generateOtpButton.disabled = false;
+
+            } finally {
+
+                generateOtpButton.textContent =
+                    "Generate OTP";
+            }
+
+        }
+    );
+
+
+    // ======================================================
+    // VERIFY EMAIL OTP
+    // ======================================================
+
+    verifyEmailOtpButton.addEventListener(
+        "click",
+        async () => {
+
+            const otp =
+                emailOtpInput.value.trim();
+
+
+            if (!verificationId) {
+
+                setVerificationStatus(
+                    emailVerificationStatus,
+                    "Please generate OTP first.",
+                    false
+                );
+
+                return;
+            }
+
+
+            if (!otp) {
+
+                setVerificationStatus(
+                    emailVerificationStatus,
+                    "Please enter email OTP.",
+                    false
+                );
+
+                return;
+            }
+
+
+            try {
+
+                verifyEmailOtpButton.disabled = true;
+
+                verifyEmailOtpButton.textContent =
+                    "Verifying...";
+
+
+                const response =
+                    await fetch(
+                        `${API_BASE_URL}/validateEmailOtp` +
+                        `?verificationId=${encodeURIComponent(verificationId)}` +
+                        `&otp=${encodeURIComponent(otp)}`,
+                        {
+                            method: "POST"
+                        }
+                    );
+
+
+                if (!response.ok) {
+
+                    const errorText =
+                        await response.text();
+
+                    throw new Error(
+                        errorText ||
+                        "Invalid email OTP."
+                    );
+                }
+
+
+                emailVerified = true;
+
+
+                setVerificationStatus(
+                    emailVerificationStatus,
+                    "✓ Email verified",
+                    true
+                );
+
+
+                verifyEmailOtpButton.disabled =
+                    true;
+
+                emailOtpInput.disabled =
+                    true;
+
+
+                updateRegisterButton();
+
+
+            } catch (error) {
+
+                console.error(
+                    "Email OTP Error:",
+                    error
+                );
+
+                setVerificationStatus(
+                    emailVerificationStatus,
+                    error.message ||
+                    "Invalid email OTP.",
+                    false
+                );
+
+                verifyEmailOtpButton.disabled =
+                    false;
+
+            } finally {
+
+                verifyEmailOtpButton.textContent =
+                    "Verify";
+            }
+
+        }
+    );
+
+
+    // ======================================================
+    // VERIFY CONTACT OTP
+    // ======================================================
+
+    verifyContactOtpButton.addEventListener(
+        "click",
+        async () => {
+
+            const otp =
+                contactOtpInput.value.trim();
+
+
+            if (!verificationId) {
+
+                setVerificationStatus(
+                    contactVerificationStatus,
+                    "Please generate OTP first.",
+                    false
+                );
+
+                return;
+            }
+
+
+            if (!otp) {
+
+                setVerificationStatus(
+                    contactVerificationStatus,
+                    "Please enter contact OTP.",
+                    false
+                );
+
+                return;
+            }
+
+
+            try {
+
+                verifyContactOtpButton.disabled =
+                    true;
+
+                verifyContactOtpButton.textContent =
+                    "Verifying...";
+
+
+                const response =
+                    await fetch(
+                        `${API_BASE_URL}/validateContactOtp` +
+                        `?verificationId=${encodeURIComponent(verificationId)}` +
+                        `&otp=${encodeURIComponent(otp)}`,
+                        {
+                            method: "POST"
+                        }
+                    );
+
+
+                if (!response.ok) {
+
+                    const errorText =
+                        await response.text();
+
+                    throw new Error(
+                        errorText ||
+                        "Invalid contact OTP."
+                    );
+                }
+
+
+                contactVerified = true;
+
+
+                setVerificationStatus(
+                    contactVerificationStatus,
+                    "✓ Contact verified",
+                    true
+                );
+
+
+                verifyContactOtpButton.disabled =
+                    true;
+
+                contactOtpInput.disabled =
+                    true;
+
+
+                updateRegisterButton();
+
+
+            } catch (error) {
+
+                console.error(
+                    "Contact OTP Error:",
+                    error
+                );
+
+                setVerificationStatus(
+                    contactVerificationStatus,
+                    error.message ||
+                    "Invalid contact OTP.",
+                    false
+                );
+
+                verifyContactOtpButton.disabled =
+                    false;
+
+            } finally {
+
+                verifyContactOtpButton.textContent =
+                    "Verify";
+            }
+
+        }
+    );
+
+
+    // ======================================================
+    // ENABLE REGISTER BUTTON
+    // ======================================================
+
+    function updateRegisterButton() {
+
+        if (
+            emailVerified &&
+            contactVerified
+        ) {
+
+            registerButton.disabled =
+                false;
+
+        } else {
+
+            registerButton.disabled =
+                true;
+        }
+    }
+
+
+    // ======================================================
+    // REGISTER USER
+    // ======================================================
+
+    registerForm.addEventListener(
+        "submit",
+        async (event) => {
+
+            event.preventDefault();
+
+
+            if (!emailVerified ||
+                !contactVerified) {
+
+                showMessage(
+                    "Please verify both email and contact.",
+                    false
+                );
+
+                return;
+            }
+
+
+            if (!verificationId) {
+
+                showMessage(
+                    "Verification ID is missing.",
+                    false
+                );
+
+                return;
+            }
+
+
+            const registerData = {
+
+                name:
+                    nameInput.value.trim(),
+
+                contact:
+                    contactInput.value.trim(),
+
+                email:
+                    emailInput.value.trim(),
+
+                password:
+                passwordInput.value,
+
+                captchaId:
+                captchaId,
+
+                captchaAnswer:
+                    captchaAnswerInput.value.trim(),
+
+                verificationId:
+                verificationId
+
+            };
+
+
+            console.log(
+                "Register Request:",
+                registerData
+            );
+
+
+            try {
+
+                registerButton.disabled = true;
+
+                registerButton.textContent = "Registering...";
+
+
+                const response = await fetch(
+                    `${API_BASE_URL}/auth/register`,
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+
+                        body: JSON.stringify(registerData)
+                    }
+                );
+
+
+                const responseText = await response.text();
+
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        responseText ||
+                        "Registration failed."
+                    );
+                }
+
+
+                let data;
+
+                try {
+
+                    data = JSON.parse(responseText);
+
+                } catch {
+
+                    data = {
+                        message: responseText
+                    };
+                }
+
+
+                console.log(
+                    "Registration Response:",
+                    data
+                );
+
+
+                showMessage(
+                    data.message ||
+                    "Registration successful. Redirecting to login...",
+                    true
+                );
+
+
+                // Redirect to login page
+                setTimeout(() => {
+
+                    window.location.href = "login.html";
+
+                }, 1500);
+
+
+            } catch (error) {
+
+                console.error(
+                    "Registration Error:",
+                    error
+                );
+
+                showMessage(
+                    error.message ||
+                    "Registration failed.",
+                    false
+                );
+
+                registerButton.disabled = false;
+
+            } finally {
+
+                registerButton.textContent = "Register";
+            }
+
+        }
+    );
+
+
+    // ======================================================
+    // MESSAGE FUNCTION
+    // ======================================================
+
+    function showMessage(
+        text,
+        success
+    ) {
+
+        message.textContent =
+            text;
+
+        message.className =
+            "message";
+
+        if (success) {
+
+            message.classList.add(
+                "message-success"
+            );
+
+        } else {
+
+            message.classList.add(
+                "message-error"
+            );
+        }
+    }
+
+
+    // ======================================================
+    // OTP VERIFICATION STATUS
+    // ======================================================
+
+    function setVerificationStatus(
+        element,
+        text,
+        success
+    ) {
+
+        element.textContent =
+            text;
+
+        element.className =
+            "verification-status";
+
+        if (success) {
+
+            element.classList.add(
+                "verification-success"
+            );
+
+        } else {
+
+            element.classList.add(
+                "verification-error"
+            );
+        }
+    }
+
+</script>
+
+
+</body>
+
+</html>
