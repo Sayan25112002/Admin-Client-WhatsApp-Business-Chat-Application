@@ -400,6 +400,7 @@
             #captchaImage {
                 width: 160px;
             }
+
         }
 
     </style>
@@ -517,7 +518,9 @@
                             type="button"
                             id="refreshCaptchaButton"
                             class="refresh-button">
+
                         ↻
+
                     </button>
 
                 </div>
@@ -587,42 +590,6 @@
 
                     <span
                             id="emailVerificationStatus"
-                            class="verification-status">
-                    </span>
-
-                </div>
-
-
-                <!-- CONTACT OTP -->
-
-                <div class="otp-group">
-
-                    <label for="contactOtp">
-                        Contact OTP
-                    </label>
-
-                    <div class="otp-row">
-
-                        <input
-                                type="text"
-                                id="contactOtp"
-                                placeholder="Enter contact OTP"
-                                maxlength="6"
-                                autocomplete="off">
-
-                        <button
-                                type="button"
-                                id="verifyContactOtpButton"
-                                class="verify-button">
-
-                            Verify
-
-                        </button>
-
-                    </div>
-
-                    <span
-                            id="contactVerificationStatus"
                             class="verification-status">
                     </span>
 
@@ -713,20 +680,11 @@
     const emailOtpInput =
         document.getElementById("emailOtp");
 
-    const contactOtpInput =
-        document.getElementById("contactOtp");
-
     const verifyEmailOtpButton =
         document.getElementById("verifyEmailOtpButton");
 
-    const verifyContactOtpButton =
-        document.getElementById("verifyContactOtpButton");
-
     const emailVerificationStatus =
         document.getElementById("emailVerificationStatus");
-
-    const contactVerificationStatus =
-        document.getElementById("contactVerificationStatus");
 
     const registerButton =
         document.getElementById("registerButton");
@@ -744,8 +702,6 @@
     let verificationId = null;
 
     let emailVerified = false;
-
-    let contactVerified = false;
 
 
     // ======================================================
@@ -826,7 +782,9 @@
                 "Unable to generate CAPTCHA.",
                 false
             );
+
         }
+
     }
 
 
@@ -841,7 +799,7 @@
 
 
     // ======================================================
-    // GENERATE OTP
+    // GENERATE EMAIL OTP
     // ======================================================
 
     generateOtpButton.addEventListener(
@@ -966,14 +924,13 @@
 
 
                 // ==================================================
-                // GENERATE OTP
+                // GENERATE EMAIL OTP
                 // ==================================================
 
                 const otpResponse =
                     await fetch(
                         `${API_BASE_URL}/generateOtp` +
-                        `?email=${encodeURIComponent(email)}` +
-                        `&contact=${encodeURIComponent(contact)}`,
+                        `?email=${encodeURIComponent(email)}`,
                         {
                             method: "POST"
                         }
@@ -993,12 +950,12 @@
 
 
                 /*
-                 * Your backend returns:
+                 * Backend returns:
                  *
                  * ResponseEntity<String>
                  *
-                 * Therefore the response body
-                 * should contain verificationId.
+                 * The response body contains
+                 * the verificationId.
                  */
 
                 verificationId =
@@ -1027,13 +984,14 @@
 
 
                 showMessage(
-                    "OTP generated successfully. Check your email/contact.",
+                    "OTP generated successfully. Check your email.",
                     true
                 );
 
 
                 // Disable Generate OTP after generation
                 generateOtpButton.disabled = true;
+
 
             } catch (error) {
 
@@ -1047,12 +1005,14 @@
                     false
                 );
 
-                generateOtpButton.disabled = false;
+                generateOtpButton.disabled =
+                    false;
 
             } finally {
 
                 generateOtpButton.textContent =
                     "Generate OTP";
+
             }
 
         }
@@ -1097,7 +1057,8 @@
 
             try {
 
-                verifyEmailOtpButton.disabled = true;
+                verifyEmailOtpButton.disabled =
+                    true;
 
                 verifyEmailOtpButton.textContent =
                     "Verifying...";
@@ -1167,121 +1128,7 @@
 
                 verifyEmailOtpButton.textContent =
                     "Verify";
-            }
 
-        }
-    );
-
-
-    // ======================================================
-    // VERIFY CONTACT OTP
-    // ======================================================
-
-    verifyContactOtpButton.addEventListener(
-        "click",
-        async () => {
-
-            const otp =
-                contactOtpInput.value.trim();
-
-
-            if (!verificationId) {
-
-                setVerificationStatus(
-                    contactVerificationStatus,
-                    "Please generate OTP first.",
-                    false
-                );
-
-                return;
-            }
-
-
-            if (!otp) {
-
-                setVerificationStatus(
-                    contactVerificationStatus,
-                    "Please enter contact OTP.",
-                    false
-                );
-
-                return;
-            }
-
-
-            try {
-
-                verifyContactOtpButton.disabled =
-                    true;
-
-                verifyContactOtpButton.textContent =
-                    "Verifying...";
-
-
-                const response =
-                    await fetch(
-                        `${API_BASE_URL}/validateContactOtp` +
-                        `?verificationId=${encodeURIComponent(verificationId)}` +
-                        `&otp=${encodeURIComponent(otp)}`,
-                        {
-                            method: "POST"
-                        }
-                    );
-
-
-                if (!response.ok) {
-
-                    const errorText =
-                        await response.text();
-
-                    throw new Error(
-                        errorText ||
-                        "Invalid contact OTP."
-                    );
-                }
-
-
-                contactVerified = true;
-
-
-                setVerificationStatus(
-                    contactVerificationStatus,
-                    "✓ Contact verified",
-                    true
-                );
-
-
-                verifyContactOtpButton.disabled =
-                    true;
-
-                contactOtpInput.disabled =
-                    true;
-
-
-                updateRegisterButton();
-
-
-            } catch (error) {
-
-                console.error(
-                    "Contact OTP Error:",
-                    error
-                );
-
-                setVerificationStatus(
-                    contactVerificationStatus,
-                    error.message ||
-                    "Invalid contact OTP.",
-                    false
-                );
-
-                verifyContactOtpButton.disabled =
-                    false;
-
-            } finally {
-
-                verifyContactOtpButton.textContent =
-                    "Verify";
             }
 
         }
@@ -1294,10 +1141,7 @@
 
     function updateRegisterButton() {
 
-        if (
-            emailVerified &&
-            contactVerified
-        ) {
+        if (emailVerified) {
 
             registerButton.disabled =
                 false;
@@ -1306,7 +1150,9 @@
 
             registerButton.disabled =
                 true;
+
         }
+
     }
 
 
@@ -1321,11 +1167,10 @@
             event.preventDefault();
 
 
-            if (!emailVerified ||
-                !contactVerified) {
+            if (!emailVerified) {
 
                 showMessage(
-                    "Please verify both email and contact.",
+                    "Please verify your email.",
                     false
                 );
 
@@ -1378,26 +1223,34 @@
 
             try {
 
-                registerButton.disabled = true;
+                registerButton.disabled =
+                    true;
 
-                registerButton.textContent = "Registering...";
-
-
-                const response = await fetch(
-                    `${API_BASE_URL}/auth/register`,
-                    {
-                        method: "POST",
-
-                        headers: {
-                            "Content-Type": "application/json"
-                        },
-
-                        body: JSON.stringify(registerData)
-                    }
-                );
+                registerButton.textContent =
+                    "Registering...";
 
 
-                const responseText = await response.text();
+                const response =
+                    await fetch(
+                        `${API_BASE_URL}/auth/register`,
+                        {
+                            method: "POST",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                            body:
+                                JSON.stringify(
+                                    registerData
+                                )
+                        }
+                    );
+
+
+                const responseText =
+                    await response.text();
 
 
                 if (!response.ok) {
@@ -1413,13 +1266,18 @@
 
                 try {
 
-                    data = JSON.parse(responseText);
+                    data =
+                        JSON.parse(
+                            responseText
+                        );
 
                 } catch {
 
                     data = {
-                        message: responseText
+                        message:
+                        responseText
                     };
+
                 }
 
 
@@ -1436,12 +1294,19 @@
                 );
 
 
-                // Redirect to login page
-                setTimeout(() => {
+                // ==================================================
+                // REDIRECT TO LOGIN
+                // ==================================================
 
-                    window.location.href = "login.html";
+                setTimeout(
+                    () => {
 
-                }, 1500);
+                        window.location.href =
+                            "login.html";
+
+                    },
+                    1500
+                );
 
 
             } catch (error) {
@@ -1457,11 +1322,14 @@
                     false
                 );
 
-                registerButton.disabled = false;
+                registerButton.disabled =
+                    false;
 
             } finally {
 
-                registerButton.textContent = "Register";
+                registerButton.textContent =
+                    "Register";
+
             }
 
         }
@@ -1483,6 +1351,7 @@
         message.className =
             "message";
 
+
         if (success) {
 
             message.classList.add(
@@ -1494,7 +1363,9 @@
             message.classList.add(
                 "message-error"
             );
+
         }
+
     }
 
 
@@ -1514,6 +1385,7 @@
         element.className =
             "verification-status";
 
+
         if (success) {
 
             element.classList.add(
@@ -1525,7 +1397,9 @@
             element.classList.add(
                 "verification-error"
             );
+
         }
+
     }
 
 </script>
