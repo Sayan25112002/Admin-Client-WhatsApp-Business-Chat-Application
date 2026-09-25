@@ -27,15 +27,18 @@ public class Captcha {
     private String captchaImage;
 
     @Column(nullable = false)
+    @Builder.Default
     private Boolean isVerified = false;
 
     @Column(nullable = false)
     private LocalDateTime expiresAt;
 
     @Column(nullable = false)
+    @Builder.Default
     private Boolean used = false;
 
     @Column(nullable = false)
+    @Builder.Default
     private Boolean isValid = false;
 
     @Column(nullable = false)
