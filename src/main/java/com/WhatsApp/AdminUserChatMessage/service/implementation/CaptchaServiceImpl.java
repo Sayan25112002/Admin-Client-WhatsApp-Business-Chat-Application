@@ -91,7 +91,7 @@ public class CaptchaServiceImpl implements CaptchaService {
                 .captchaId(UUID.randomUUID().toString())
                 .captchaAnswer(captchaText)
                 .captchaImage(imageBase64)
-                .expiresAt(LocalDateTime.now().plusMinutes(5))
+                .expiresAt(LocalDateTime.now().plusMinutes(20))
                 .createdAt(LocalDateTime.now())
                 .build();
         captchaRepository.save(captcha);
@@ -112,7 +112,6 @@ public class CaptchaServiceImpl implements CaptchaService {
         }
         captcha.setIsValid(true);
         captcha.setIsVerified(true);
-        captcha.setExpiresAt(LocalDateTime.now().plusSeconds(30));
         captchaRepository.save(captcha);
     }
 }
