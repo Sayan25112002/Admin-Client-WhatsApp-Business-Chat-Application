@@ -75,5 +75,21 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             writeErrorMessage(request, response, "Invalid JWT Token");
         }
     }
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String uri = request.getRequestURI();
+        return uri.startsWith("/auth/")
+                || uri.equals("/generateImageCaptcha")
+                || uri.equals("/validateCaptcha")
+                || uri.equals("/generateOtp")
+                || uri.equals("/validateEmailOtp")
+                || uri.equals("/validateContactOtp")
+                || uri.startsWith("/refresh-token/")
+                || uri.startsWith("/ws/")
+                || uri.equals("/")
+                || uri.equals("/static/css/")
+                || uri.equals("/static/js/");
+    }
 }
 
