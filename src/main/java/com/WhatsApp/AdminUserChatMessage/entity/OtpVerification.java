@@ -22,25 +22,13 @@ public class OtpVerification {
     private String email;
 
     @Column(nullable = false)
-    private String contact;
-
-    @Column(nullable = false)
     private String emailOtp;
-
-    @Column(nullable = false)
-    private String contactOtp;
 
     private Boolean emailVerified;
 
-    private Boolean contactVerified;
-
     private LocalDateTime emailOtpExpiresAt;
 
-    private LocalDateTime contactOtpExpiresAt;
-
     private Integer emailAttempts;
-
-    private Integer contactAttempts;
 
     private LocalDateTime createdAt;
 
