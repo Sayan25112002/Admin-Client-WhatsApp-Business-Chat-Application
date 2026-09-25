@@ -13,8 +13,6 @@ public class VerifyOtpRequestDto {
 
     private String verificationId;
 
-    private String contactOtp;
-
     private String emailOtp;
 
     private String captchaId;
