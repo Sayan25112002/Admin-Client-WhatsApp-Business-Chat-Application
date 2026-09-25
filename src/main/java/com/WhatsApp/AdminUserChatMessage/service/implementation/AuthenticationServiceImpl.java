@@ -73,14 +73,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         if(!Boolean.TRUE.equals(otpVerification.getEmailVerified())){
             throw new RuntimeException("Please Verify Your Email First");
         }
-        if(!Boolean.TRUE.equals(otpVerification.getContactVerified())){
-            throw new RuntimeException("Please Verify Your Contact First");
-        }
         if(!otpVerification.getEmail().equals(registerRequestDto.getEmail())){
             throw new RuntimeException("Email Doesn't Match Verified Email");
-        }
-        if(!otpVerification.getContact().equals(registerRequestDto.getContact())){
-            throw new RuntimeException("Contact Doesn't Match Verified Contact");
         }
         User user = User.builder()
                 .name(registerRequestDto.getName())
