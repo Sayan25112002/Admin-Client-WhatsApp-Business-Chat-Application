@@ -73,4 +73,5 @@ public class AuthUtil {
     public String getTokenType(String token) {
         return getClaimsFromToken(token).get("tokenType").toString();
     }
+
 }
