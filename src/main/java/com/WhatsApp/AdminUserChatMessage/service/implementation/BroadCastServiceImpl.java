@@ -5,7 +5,6 @@ import com.WhatsApp.AdminUserChatMessage.dto.responseDto.BroadCastMessageRespons
 import com.WhatsApp.AdminUserChatMessage.entity.BroadCastMessage;
 import com.WhatsApp.AdminUserChatMessage.entity.User;
 import com.WhatsApp.AdminUserChatMessage.entity.type.MessageType;
-import com.WhatsApp.AdminUserChatMessage.entity.type.Role;
 import com.WhatsApp.AdminUserChatMessage.mapper.BroadCastMapper;
 import com.WhatsApp.AdminUserChatMessage.repository.BroadCastRepository;
 import com.WhatsApp.AdminUserChatMessage.repository.UserRepository;
@@ -27,9 +26,6 @@ public class BroadCastServiceImpl implements BroadCastService {
     @Override
     public BroadCastMessageResponseDto sendMessage(BroadCastMessageRequestDto broadCastMessageRequestDto, Long senderId) throws AccessDeniedException {
         User sender = userRepository.findById(senderId).orElseThrow(()-> new RuntimeException("User not found"));
-        if(sender.getRole()!= Role.ADMIN){
-            throw new AccessDeniedException("Only Admin Can send message");
-        }
         BroadCastMessage broadCastMessage = broadCastMapper.toBroadCastMessage(broadCastMessageRequestDto);
         broadCastMessage.setUser(sender);
         broadCastMessage.setMessageType(MessageType.CHAT);
