@@ -1,6 +1,7 @@
 package com.WhatsApp.AdminUserChatMessage.repository;
 
 import com.WhatsApp.AdminUserChatMessage.entity.User;
+import com.WhatsApp.AdminUserChatMessage.entity.type.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -14,4 +15,5 @@ public interface UserRepository extends JpaRepository<User,Long> {
 
     boolean existsByEmail(String email);
 
+    Optional<User> findByRole(Role role);
 }
