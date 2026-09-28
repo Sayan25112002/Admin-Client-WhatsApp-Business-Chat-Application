@@ -118,4 +118,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         User user = (User) authentication.getPrincipal();
         return user.getId();
     }
+
+    @Override
+    public Role getAuthenticatedRoleFromToken(Principal principal) {
+        Authentication authentication = (Authentication) principal;
+        User user = (User) authentication.getPrincipal();
+        return user.getRole();
+    }
 }
