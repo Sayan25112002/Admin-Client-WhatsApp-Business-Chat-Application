@@ -16,10 +16,12 @@ import com.WhatsApp.AdminUserChatMessage.security.AuthUtil;
 import com.WhatsApp.AdminUserChatMessage.service.AuthenticationService;
 import com.WhatsApp.AdminUserChatMessage.service.RefreshTokenService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
 import java.time.LocalDateTime;
 
 @Service
@@ -109,5 +111,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         captcha.setIsVerified(true);
         captcha.setIsValid(true);
         captchaRepository.save(captcha);
+    }
+
+    public Long getAuthenticatedUserIdFromToken(Principal principal) {
+        Authentication authentication = (Authentication)  principal;
+        User user = (User) authentication.getPrincipal();
+        return user.getId();
     }
 }
