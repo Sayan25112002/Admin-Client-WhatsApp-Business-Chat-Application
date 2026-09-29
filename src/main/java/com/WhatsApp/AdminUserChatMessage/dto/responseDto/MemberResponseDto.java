@@ -1,7 +1,5 @@
 package com.WhatsApp.AdminUserChatMessage.dto.responseDto;
 
-import com.WhatsApp.AdminUserChatMessage.entity.type.Role;
-import com.WhatsApp.AdminUserChatMessage.entity.type.UserStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,8 +15,8 @@ public class MemberResponseDto {
 
     private String name;
 
-    private Role role;
+    private String role;
 
-    private UserStatus status;
+    private Boolean online;
 
 }

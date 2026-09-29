@@ -50,6 +50,20 @@ public class WebSocketAuthInterceptor implements ChannelInterceptor {
                 throw new IllegalArgumentException("Invalid Websocket JWT Token");
             }
         }
+        if(accessor != null && StompCommand.SUBSCRIBE.equals(accessor.getCommand())) {
+            String destination = accessor.getDestination();
+            if (!"/topic/public".equals(destination) && !"/user/queue/private".equals(destination)) {
+                log.warn("Blocked SUBSCRIBE to {}", destination);
+                return null;
+            }
+        }
+        if(accessor != null && StompCommand.SEND.equals(accessor.getCommand())) {
+            String destination = accessor.getDestination();
+            if (destination == null || !destination.startsWith("/app/")) {
+                log.warn("Blocked SEND to {}", destination);
+                return null;
+            }
+        }
         return message;
     }
 }

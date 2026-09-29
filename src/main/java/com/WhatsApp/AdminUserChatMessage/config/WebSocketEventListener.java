@@ -33,7 +33,7 @@ public class WebSocketEventListener {
         log.info("{} joined the session", user.getName());
         BroadCastMessage msg = new BroadCastMessage();
         msg.setUser(user);
-        msg.setContent(user.getName()+"{} joined the session");
+        msg.setContent(user.getName()+" joined the session");
         msg.setMessageType(MessageType.JOIN);
         msg.setCreatedAt(LocalDateTime.now());
         broadCastRepository.save(msg);

@@ -531,7 +531,7 @@
             <!-- REGISTER -->
             <div class="switch-account">
                 Don't have an account?
-                <a href="register.html">
+                <a href="register.html" onclick="sessionStorage.setItem('allowRegister','1')">
                     Register
                 </a>
             </div>
@@ -790,38 +790,38 @@
                 // ==========================================
                 // SAVE TOKENS
                 // ==========================================
-                localStorage.setItem(
+                sessionStorage.setItem(
                     "accessToken",
                     data.accessToken
                 );
-                localStorage.setItem(
+                sessionStorage.setItem(
                     "refreshToken",
                     data.refreshToken
                 );
                 // ==========================================
                 // SAVE USER INFORMATION
                 // ==========================================
-                localStorage.setItem(
+                sessionStorage.setItem(
                     "userId",
                     data.userId
                 );
-                localStorage.setItem(
+                sessionStorage.setItem(
                     "userName",
                     data.name
                 );
-                localStorage.setItem(
+                sessionStorage.setItem(
                     "userEmail",
                     data.email
                 );
-                localStorage.setItem(
+                sessionStorage.setItem(
                     "userContact",
                     data.contact
                 );
-                localStorage.setItem(
+                sessionStorage.setItem(
                     "userRole",
                     data.role
                 );
-                localStorage.setItem(
+                sessionStorage.setItem(
                     "userStatus",
                     data.userStatus
                 );
@@ -937,4 +937,3 @@
 </script>
 </body>
 </html>
-
