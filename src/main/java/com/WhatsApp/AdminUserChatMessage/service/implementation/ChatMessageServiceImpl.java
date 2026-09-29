@@ -64,6 +64,8 @@ public class ChatMessageServiceImpl implements ChatMessageService {
                 .id(chatMessage.getId())
                 .conversationId(conversation.getId())
                 .senderId(user.getId())
+                .senderName(user.getName())
+                .senderRole(user.getRole().toString())
                 .content(chatMessage.getContent())
                 .messageType(chatMessage.getMessageType())
                 .createdAt(chatMessage.getCreatedAt())
