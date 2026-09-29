@@ -20,6 +20,10 @@ public class ChatMessageResponseDto {
 
     private Long senderId;
 
+    private String senderName;
+
+    private String senderRole;
+
     private String content;
 
     private MessageType messageType;
