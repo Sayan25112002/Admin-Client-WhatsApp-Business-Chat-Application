@@ -18,6 +18,8 @@ public class BroadCastMessageResponseDto {
 
     private Long senderId;
 
+    private String senderName;
+
     private String content;
 
     private MessageType messageType;

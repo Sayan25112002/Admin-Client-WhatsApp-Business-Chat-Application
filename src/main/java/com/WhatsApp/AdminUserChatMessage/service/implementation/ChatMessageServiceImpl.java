@@ -13,6 +13,7 @@ import com.WhatsApp.AdminUserChatMessage.repository.UserRepository;
 import com.WhatsApp.AdminUserChatMessage.service.ChatMessageService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +26,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
     private final ChatMessageRepository chatMessageRepository;
     private final ConversationRepository conversationRepository;
     private final UserRepository userRepository;
+    private final SimpMessagingTemplate simpMessagingTemplate;
 
     @Transactional
     @Override
@@ -70,5 +72,13 @@ public class ChatMessageServiceImpl implements ChatMessageService {
                 .messageType(chatMessage.getMessageType())
                 .createdAt(chatMessage.getCreatedAt())
                 .build();
+    }
+
+    @Override
+    public void sendToConversationParticipants(ChatMessageResponseDto chatMessageResponseDto) {
+        Conversation conversation = conversationRepository.findById(chatMessageResponseDto.getConversationId())
+                .orElseThrow(() -> new RuntimeException("Conversation not found"));
+        simpMessagingTemplate.convertAndSendToUser(conversation.getAdmin().getUsername(),"/queue/private",chatMessageResponseDto);
+        simpMessagingTemplate.convertAndSendToUser(conversation.getClient().getUsername(),"/queue/private",chatMessageResponseDto);
     }
 }

@@ -13,6 +13,4 @@ public interface ConversationRepository extends JpaRepository<Conversation,Long>
 
     Optional<Conversation> findByIdAndAdminId(Long id, Long adminId);
 
-    Optional<Conversation> findByIdAndClientId(Long id, Long clientId);
-
 }

@@ -51,6 +51,9 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
+    @Column
+    private LocalDateTime publicChatJoinedAt;
+
     @OneToMany(mappedBy = "user")
     @JsonIgnore
     private List<PresentEvent> presentEvents = new ArrayList<>();

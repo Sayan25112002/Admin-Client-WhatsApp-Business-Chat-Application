@@ -1,31 +1,26 @@
-<!DOCTYPE html>
 
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <title>WhatsApp Public Group</title>
-
-    <!-- Default session guard -->
     <script>
         (function(){
             const accessToken=sessionStorage.getItem("accessToken");
             const userId=sessionStorage.getItem("userId");
             const userRole=sessionStorage.getItem("userRole");
-
             if(!accessToken || !userId || !userRole){
-                window.location.replace("login.html");
+                window.location.replace(sessionStorage.getItem("loginPageUrl") || "login.html");
             }
         })();
 
-        // Also handles browser Back/Forward cache after logout
         window.addEventListener("pageshow",function(){
             const accessToken=sessionStorage.getItem("accessToken");
             const userId=sessionStorage.getItem("userId");
             const userRole=sessionStorage.getItem("userRole");
-
             if(!accessToken || !userId || !userRole){
-                window.location.replace("login.html");
+                window.location.replace(sessionStorage.getItem("loginPageUrl") || "login.html");
             }
         });
     </script>
@@ -112,14 +107,11 @@
             .chat{min-width:0}
         }
     </style>
-
 </head>
 
 <body>
 <div class="app">
-
     <aside class="sidebar">
-
         <div class="sidebar-header">
             <div class="profile-circle" id="profileCircle">?</div>
 
@@ -141,24 +133,19 @@
 
         <div class="group-item active" id="publicGroupItem" onclick="openPublicChat()">
             <div class="group-icon">👥</div>
-
             <div class="group-info">
                 <div class="group-name">Public Group</div>
                 <div class="group-last" id="lastMessage">No messages yet</div>
             </div>
-
             <div class="group-time" id="lastTime"></div>
         </div>
 
         <div class="section-title">Members</div>
         <div class="sidebar-members" id="sidebarMembers"></div>
-
     </aside>
 
     <main class="chat">
-
         <header class="chat-header">
-
             <div class="group-icon" id="chatIcon">👥</div>
 
             <div class="chat-title">
@@ -172,15 +159,11 @@
             </div>
 
             <div class="members-panel" id="membersPanel">
-
                 <div class="members-header">
                     Members (<span id="memberCount">0</span>)
                 </div>
-
                 <div class="member-list" id="membersList"></div>
-
             </div>
-
         </header>
 
         <section class="messages" id="messages">
@@ -188,37 +171,21 @@
         </section>
 
         <footer class="input-area" id="inputArea">
-
-            <input
-                    type="text"
-                    id="messageInput"
-                    placeholder="Type a message"
-                    autocomplete="off"
-                    maxlength="1000"
-            >
-
-            <button
-                    class="send-btn"
-                    id="sendButton"
-                    onclick="sendMessage()"
-            >➤</button>
+            <input type="text" id="messageInput" placeholder="Type a message" autocomplete="off" maxlength="1000">
+            <button class="send-btn" id="sendButton" onclick="sendMessage()">➤</button>
 
             <div class="client-notice" id="clientNotice" style="display:none">
                 Only the ADMIN can send messages to the public group.
             </div>
-
         </footer>
-
     </main>
-    ```
-
 </div>
 
 <script>
-
     const API_BASE_URL="http://localhost:8080";
-
     const REFRESH_TOKEN_URL=API_BASE_URL+"/refresh-token/";
+    const LOGOUT_URL=API_BASE_URL+"/auth/logout";
+    const LOGIN_PAGE=sessionStorage.getItem("loginPageUrl") || "login.html";
 
     let stompClient=null;
     let connected=false;
@@ -250,63 +217,48 @@
     let activeChat={type:"PUBLIC"};
     let memberFilter="";
 
-    document.addEventListener("DOMContentLoaded",function(){
-
+    document.addEventListener("DOMContentLoaded",async function(){
         if(!initializeUser()){
             return;
         }
 
         configureInput();
         renderMembers();
+
+        await loadPublicMessages();
+
         renderFeed();
         connectWebSocket();
 
         const messageInput=document.getElementById("messageInput");
 
         if(messageInput){
-
             messageInput.addEventListener("keydown",function(event){
-
                 if(event.key==="Enter" && !event.shiftKey){
-
                     event.preventDefault();
-
                     sendMessage();
-
                 }
-
             });
-
         }
 
         document.getElementById("memberSearch").addEventListener("input",function(event){
-
             memberFilter=event.target.value.trim().toLowerCase();
-
             renderMembers();
-
         });
-
     });
 
     function initializeUser(){
-
         const accessToken=sessionStorage.getItem("accessToken");
 
         if(!accessToken || !currentUser.id || !currentUser.role){
-
             clearLoginData();
-
             return false;
-
         }
 
         document.getElementById("profileName").textContent=currentUser.name;
-
         document.getElementById("profileRole").textContent=currentUser.role;
 
         const firstLetter=currentUser.name.charAt(0).toUpperCase();
-
         document.getElementById("profileCircle").textContent=firstLetter;
 
         addMember({
@@ -317,19 +269,14 @@
         });
 
         return true;
-
     }
 
     function configureInput(){
+        const canType=activeChat.type==="PRIVATE" || currentUser.role==="ADMIN";
 
-        const canType=
-            activeChat.type==="PRIVATE" ||
-            currentUser.role==="ADMIN";
-
-        const peerForInput=
-            activeChat.type==="PRIVATE"
-                ? members.get(activeChat.peerId)
-                : null;
+        const peerForInput=activeChat.type==="PRIVATE"
+            ? members.get(activeChat.peerId)
+            : null;
 
         document.getElementById("messageInput").placeholder=
             peerForInput
@@ -344,13 +291,10 @@
 
         document.getElementById("clientNotice").style.display=
             canType ? "none" : "block";
-
     }
 
     function isTokenExpired(token){
-
         try{
-
             const base64=token.split(".")[1]
                 .replace(/-/g,"+")
                 .replace(/_/g,"/");
@@ -358,35 +302,25 @@
             const payload=JSON.parse(atob(base64));
 
             return payload.exp*1000<=Date.now()+10000;
-
         }catch(error){
-
             return true;
-
         }
-
     }
 
     async function getValidAccessToken(){
-
         const accessToken=sessionStorage.getItem("accessToken");
 
         if(accessToken && !isTokenExpired(accessToken)){
-
             return accessToken;
-
         }
 
         const refreshToken=sessionStorage.getItem("refreshToken");
 
         if(!refreshToken || isTokenExpired(refreshToken)){
-
             return null;
-
         }
 
         try{
-
             const response=await fetch(
                 REFRESH_TOKEN_URL,
                 {
@@ -401,9 +335,7 @@
             );
 
             if(!response.ok){
-
                 return null;
-
             }
 
             const data=await response.json();
@@ -414,9 +346,7 @@
                 data.token;
 
             if(!newAccessToken){
-
                 return null;
-
             }
 
             sessionStorage.setItem(
@@ -425,175 +355,191 @@
             );
 
             if(data.refreshToken){
-
                 sessionStorage.setItem(
                     "refreshToken",
                     data.refreshToken
                 );
-
             }
 
             return newAccessToken;
-
         }catch(error){
-
-            console.error(
-                "Token refresh failed:",
-                error
-            );
-
+            console.error("Token refresh failed:",error);
             return null;
-
         }
-
     }
 
     function tokenUserId(token){
-
         try{
+            const base64=token.split(".")[1]
+                .replace(/-/g,"+")
+                .replace(/_/g,"/");
 
-            const base64=
-                token.split(".")[1]
-                    .replace(/-/g,"+")
-                    .replace(/_/g,"/");
-
-            return Number(
-                JSON.parse(atob(base64)).userId
-            );
-
+            return Number(JSON.parse(atob(base64)).userId);
         }catch(error){
-
             return null;
-
         }
-
     }
 
     async function apiFetch(path,options){
-
         const token=await getValidAccessToken();
 
         if(!token){
-
             clearLoginData();
-
             throw new Error("Session expired");
-
         }
 
         if(tokenUserId(token)!==Number(currentUser.id)){
-
             clearLoginData();
-
             throw new Error("Signed in as a different user");
-
         }
 
-        const opts=Object.assign({},options||{});
+        const opts=Object.assign({},options || {});
 
         opts.headers=Object.assign(
             {
                 "Authorization":"Bearer "+token
             },
-            opts.headers||{}
+            opts.headers || {}
         );
 
-        const response=
-            await fetch(
-                API_BASE_URL+path,
-                opts
-            );
+        const response=await fetch(
+            API_BASE_URL+path,
+            opts
+        );
 
         if(response.status===401){
-
             clearLoginData();
-
             throw new Error("Session expired");
-
         }
 
         if(!response.ok){
-
             throw new Error(
                 "Request failed ("+
                 response.status+
                 ")"
             );
-
         }
 
         return response.json();
+    }
 
+    async function loadPublicMessages(){
+        try{
+            /*
+             * The backend uses the authenticated user's
+             * publicChatJoinedAt to determine which
+             * public messages are visible.
+             *
+             * We do NOT send loginTime or after from
+             * the frontend.
+             */
+            const list=await apiFetch(
+                "/chat/public/messages"
+            );
+
+            publicFeed.length=0;
+
+            if(!Array.isArray(list)){
+                return;
+            }
+
+            list.sort(function(a,b){
+                return Number(a.id || 0)-Number(b.id || 0);
+            });
+
+            list.forEach(function(message){
+                if(
+                    message.messageType==="JOIN" ||
+                    message.messageType==="LEFT"
+                ){
+                    let text=message.content || "";
+
+                    if(message.messageType==="JOIN"){
+                        text=text.replace(
+                            " joined the session",
+                            " joined the chat"
+                        );
+                    }
+
+                    publicFeed.push({
+                        kind:"system",
+                        content:text,
+                        createdAt:message.createdAt
+                    });
+                }else{
+                    publicFeed.push({
+                        kind:"chat",
+                        response:message
+                    });
+                }
+            });
+
+            if(list.length>0){
+                const lastMessage=list[list.length-1];
+
+                updateLastMessage(
+                    lastMessage.content || "",
+                    lastMessage.createdAt
+                );
+            }else{
+                updateLastMessage("",null);
+            }
+
+            if(activeChat.type==="PUBLIC"){
+                renderFeed();
+            }
+        }catch(error){
+            console.error(
+                "Could not load public messages:",
+                error
+            );
+        }
     }
 
     async function loadMembers(){
-
         const list=await apiFetch("/chat/members");
 
         list.forEach(function(m){
-
             members.set(
                 Number(m.id),
                 {
                     id:Number(m.id),
                     name:m.name || "User",
                     role:m.role || "CLIENT",
-                    status:m.online
-                        ? "ONLINE"
-                        : "OFFLINE"
+                    status:m.online ? "ONLINE" : "OFFLINE"
                 }
             );
-
         });
 
-        const me=
-            members.get(
-                Number(currentUser.id)
-            );
+        const me=members.get(Number(currentUser.id));
 
         if(me){
-
             me.status="ONLINE";
-
         }
 
         renderMembers();
-
     }
 
     async function connectWebSocket(){
-
-        if(
-            connecting ||
-            (stompClient && connected)
-        ){
-
+        if(connecting || (stompClient && connected)){
             return;
-
         }
 
         connecting=true;
 
-        const accessToken=
-            await getValidAccessToken();
+        const accessToken=await getValidAccessToken();
 
         if(!accessToken){
-
             connecting=false;
-
             clearLoginData();
-
             return;
-
         }
 
-        const socket=
-            new SockJS(
-                API_BASE_URL+"/ws"
-            );
+        const socket=new SockJS(
+            API_BASE_URL+"/ws"
+        );
 
-        stompClient=
-            Stomp.over(socket);
+        stompClient=Stomp.over(socket);
 
         stompClient.debug=function(){};
 
@@ -602,11 +548,8 @@
         };
 
         stompClient.connect(
-
             headers,
-
             function(frame){
-
                 connecting=false;
                 connected=true;
 
@@ -618,99 +561,57 @@
                 stompClient.subscribe(
                     "/topic/public",
                     function(message){
-
                         try{
-
                             const response=
-                                JSON.parse(
-                                    message.body
-                                );
+                                JSON.parse(message.body);
 
-                            handleIncomingMessage(
-                                response
-                            );
-
+                            handleIncomingMessage(response);
                         }catch(error){
-
                             console.error(
                                 "Invalid WebSocket message:",
                                 error
                             );
-
                         }
-
                     }
                 );
 
                 stompClient.subscribe(
                     "/user/queue/private",
                     function(message){
-
                         try{
-
                             const response=
-                                JSON.parse(
-                                    message.body
-                                );
+                                JSON.parse(message.body);
 
-                            handlePrivateMessage(
-                                response
-                            );
-
+                            handlePrivateMessage(response);
                         }catch(error){
-
                             console.error(
                                 "Invalid private message:",
                                 error
                             );
-
                         }
-
                     }
                 );
 
                 updateConnectionStatus(true);
 
-                loadMembers().catch(
-                    function(error){
-
-                        console.error(
-                            "Could not load members:",
-                            error
-                        );
-
-                    }
-                );
+                loadMembers().catch(function(error){
+                    console.error(
+                        "Could not load members:",
+                        error
+                    );
+                });
 
                 if(membersTimer){
-
-                    clearInterval(
-                        membersTimer
-                    );
-
+                    clearInterval(membersTimer);
                 }
 
-                membersTimer=
-                    setInterval(
-                        function(){
-
-                            if(connected){
-
-                                loadMembers()
-                                    .catch(
-                                        function(){}
-                                    );
-
-                            }
-
-                        },
-                        30000
-                    );
-
+                membersTimer=setInterval(function(){
+                    if(connected){
+                        loadMembers().catch(function(){});
+                    }
+                },30000);
             },
-
             function(error){
-
                 connecting=false;
                 connected=false;
 
@@ -722,87 +623,46 @@
                 updateConnectionStatus(false);
 
                 if(!loggingOut){
-
                     scheduleReconnect();
-
                 }
-
             }
-
         );
-
     }
 
     function scheduleReconnect(){
-
         if(reconnectTimer){
-
             return;
-
         }
 
-        reconnectTimer=
-            setTimeout(
-                function(){
+        reconnectTimer=setTimeout(function(){
+            reconnectTimer=null;
 
-                    reconnectTimer=null;
-
-                    if(!connected){
-
-                        connectWebSocket();
-
-                    }
-
-                },
-                5000
-            );
-
+            if(!connected){
+                connectWebSocket();
+            }
+        },5000);
     }
 
     function handleIncomingMessage(response){
-
         if(!response){
-
             return;
-
         }
 
         if(response.messageType==="JOIN"){
-
-            handlePresence(
-                response,
-                true
-            );
-
+            handlePresence(response,true);
             return;
-
         }
 
         if(response.messageType==="LEFT"){
-
-            handlePresence(
-                response,
-                false
-            );
-
+            handlePresence(response,false);
             return;
-
         }
 
         if(response.messageType==="CHAT"){
+            const senderId=Number(response.senderId);
 
-            const senderId=
-                Number(response.senderId);
-
-            if(
-                senderId &&
-                !members.has(senderId)
-            ){
-
-                loadMembers().catch(
-                    function(){}
-                );
-
+            if(senderId && !members.has(senderId)){
+                loadMembers().catch(function(){});
             }
 
             publicFeed.push({
@@ -816,88 +676,111 @@
             );
 
             if(activeChat.type==="PUBLIC"){
-
                 renderFeed();
-
             }
-
         }
-
     }
 
-    async function handlePresence(
-        response,
-        isJoin
-    ){
+    async function handlePresence(response,isJoin){
+        let uid=Number(
+            response.senderId ||
+            response.userId
+        );
 
-        const uid=
-            Number(
-                response.userId ||
-                response.senderId
-            );
+        let name=response.senderName || "";
 
-        let member=
-            uid
-                ? members.get(uid)
-                : null;
+        let member=uid
+            ? members.get(uid)
+            : null;
 
         if(uid && !member){
-
             try{
-
                 await loadMembers();
-
             }catch(error){
-
                 console.error(
                     "Could not load members:",
                     error
                 );
-
             }
 
             member=members.get(uid);
+        }
 
+        if(!member && name){
+            members.forEach(function(m){
+                if(
+                    !member &&
+                    m.name &&
+                    m.name.toLowerCase()===
+                    name.toLowerCase()
+                ){
+                    member=m;
+                    uid=Number(m.id);
+                }
+            });
+        }
+
+        if(!name && response.content){
+            const content=response.content;
+            const joinSuffix=" joined the session";
+            const leftSuffix=" left the chat";
+
+            if(
+                isJoin &&
+                content.endsWith(joinSuffix)
+            ){
+                name=content.substring(
+                    0,
+                    content.length-joinSuffix.length
+                ).trim();
+            }else if(
+                !isJoin &&
+                content.endsWith(leftSuffix)
+            ){
+                name=content.substring(
+                    0,
+                    content.length-leftSuffix.length
+                ).trim();
+            }
+        }
+
+        if(uid===Number(currentUser.id)){
+            name="You";
+        }
+
+        if(!name){
+            name=
+                (member && member.name) ||
+                "A user";
         }
 
         if(member){
-
             member.status=
                 isJoin
                     ? "ONLINE"
                     : "OFFLINE";
 
             renderMembers();
-
         }
 
-        const name=
-            uid===Number(currentUser.id)
-                ? "You"
-                : (
-                    (member && member.name) ||
-                    response.senderName ||
-                    "A user"
-                );
+        let text=response.content || "";
 
-        const text=
-            name+
-            (
-                isJoin
+        if(!text){
+            text=
+                name+
+                (isJoin
                     ? " joined the chat"
-                    : " left the chat"
+                    : " left the chat");
+        }else if(isJoin){
+            text=text.replace(
+                " joined the session",
+                " joined the chat"
             );
+        }
 
-        setTimeout(
-            function(){
-
-                loadMembers().catch(
-                    function(){}
-                );
-
-            },
-            1500
-        );
+        setTimeout(function(){
+            loadMembers().catch(function(){});
+        },1500);
 
         publicFeed.push({
             kind:"system",
@@ -911,71 +794,33 @@
         );
 
         if(activeChat.type==="PUBLIC"){
-
             renderFeed();
-
         }
-
     }
 
-    function mergeMessages(
-        conversationId,
-        list
-    ){
-
+    function mergeMessages(conversationId,list){
         const byId=new Map();
 
-        (
-            privateFeeds.get(
-                conversationId
-            ) || []
-        ).forEach(
-            function(m){
+        (privateFeeds.get(conversationId) || [])
+            .forEach(function(m){
+                byId.set(Number(m.id),m);
+            });
 
-                byId.set(
-                    Number(m.id),
-                    m
-                );
-
-            }
-        );
-
-        list.forEach(
-            function(m){
-
-                byId.set(
-                    Number(m.id),
-                    m
-                );
-
-            }
-        );
+        list.forEach(function(m){
+            byId.set(Number(m.id),m);
+        });
 
         privateFeeds.set(
             conversationId,
-            Array.from(
-                byId.values()
-            ).sort(
-                function(a,b){
-
-                    return Number(a.id)-
-                        Number(b.id);
-
-                }
-            )
+            Array.from(byId.values()).sort(function(a,b){
+                return Number(a.id)-Number(b.id);
+            })
         );
-
     }
 
     function handlePrivateMessage(response){
-
-        if(
-            !response ||
-            !response.conversationId
-        ){
-
+        if(!response || !response.conversationId){
             return;
-
         }
 
         const conversationId=
@@ -985,98 +830,64 @@
             Number(response.senderId);
 
         const isMine=
-            senderId===
-            Number(currentUser.id);
+            senderId===Number(currentUser.id);
 
         let peerId=null;
 
         if(isMine){
-
             privateConversations.forEach(
                 function(convId,peer){
-
-                    if(
-                        convId===
-                        conversationId
-                    ){
-
+                    if(convId===conversationId){
                         peerId=peer;
-
                     }
-
                 }
             );
-
         }else{
-
             peerId=senderId;
 
             privateConversations.set(
                 peerId,
                 conversationId
             );
-
         }
 
         if(peerId===null){
-
             return;
-
         }
 
         if(!members.has(peerId)){
-
-            loadMembers().catch(
-                function(){}
-            );
-
+            loadMembers().catch(function(){});
         }
 
-        if(
-            privateFeeds.has(
-                conversationId
-            )
-        ){
-
+        if(privateFeeds.has(conversationId)){
             mergeMessages(
                 conversationId,
                 [response]
             );
-
         }
 
         const isOpen=
             activeChat.type==="PRIVATE" &&
-            activeChat.conversationId===
-            conversationId;
+            activeChat.conversationId===conversationId;
 
         if(isOpen){
-
             renderFeed();
-
         }else if(!isMine){
-
             unread.set(
                 peerId,
                 (unread.get(peerId) || 0)+1
             );
 
             renderMembers();
-
         }
-
     }
 
     function canChatWith(member){
-
         if(
             !member ||
-            Number(member.id)===
-            Number(currentUser.id)
+            Number(member.id)===Number(currentUser.id)
         ){
-
             return false;
-
         }
 
         return (
@@ -1086,24 +897,18 @@
             currentUser.role==="CLIENT" &&
             member.role==="ADMIN"
         );
-
     }
 
     async function openPrivateChat(peerId){
-
-        const peer=
-            members.get(
-                Number(peerId)
-            );
+        const peer=members.get(
+            Number(peerId)
+        );
 
         if(!canChatWith(peer)){
-
             return;
-
         }
 
         try{
-
             const query=
                 currentUser.role==="ADMIN"
                     ? "?clientId="+peer.id
@@ -1111,8 +916,7 @@
 
             const conversation=
                 await apiFetch(
-                    "/chat/private/conversation"+
-                    query,
+                    "/chat/private/conversation"+query,
                     {
                         method:"POST"
                     }
@@ -1126,11 +930,9 @@
                     Number(peer.id);
 
             if(!expectedPair){
-
                 throw new Error(
                     "Conversation does not belong to the selected member"
                 );
-
             }
 
             const history=
@@ -1160,12 +962,10 @@
 
             refreshChatView();
 
-            document
-                .getElementById("messageInput")
-                .focus();
-
+            document.getElementById(
+                "messageInput"
+            ).focus();
         }catch(error){
-
             console.error(
                 "Could not open private chat:",
                 error
@@ -1174,42 +974,32 @@
             alert(
                 "Could not open the private chat. Please try again."
             );
-
         }
-
     }
 
     function openPublicChat(){
-
         activeChat={
             type:"PUBLIC"
         };
 
         refreshChatView();
-
     }
 
     function refreshChatView(){
-
-        document
-            .getElementById("publicGroupItem")
-            .classList.toggle(
+        document.getElementById(
+            "publicGroupItem"
+        ).classList.toggle(
             "active",
             activeChat.type==="PUBLIC"
         );
 
         updateChatHeader();
-
         configureInput();
-
         renderMembers();
-
         renderFeed();
-
     }
 
     function updateChatHeader(){
-
         const icon=
             document.getElementById("chatIcon");
 
@@ -1217,11 +1007,8 @@
             document.getElementById("chatTitle");
 
         if(activeChat.type==="PRIVATE"){
-
             const peer=
-                members.get(
-                    activeChat.peerId
-                );
+                members.get(activeChat.peerId);
 
             const name=
                 (peer && peer.name) ||
@@ -1231,32 +1018,21 @@
                 name.charAt(0).toUpperCase();
 
             title.textContent=name;
-
         }else{
-
             icon.textContent="👥";
-
             title.textContent="Public Group";
-
         }
 
         updateSubtitle();
-
     }
 
     function updateSubtitle(){
-
         const status=
-            document.getElementById(
-                "memberStatus"
-            );
+            document.getElementById("memberStatus");
 
         if(activeChat.type==="PRIVATE"){
-
             const peer=
-                members.get(
-                    activeChat.peerId
-                );
+                members.get(activeChat.peerId);
 
             status.textContent=
                 "Private chat · "+
@@ -1268,140 +1044,91 @@
                 );
 
             return;
-
         }
 
         if(!connected){
-
-            status.textContent=
-                "Connecting...";
-
+            status.textContent="Connecting...";
             return;
-
         }
 
         let online=0;
 
-        members.forEach(
-            function(m){
-
-                if(m.status==="ONLINE"){
-
-                    online++;
-
-                }
-
+        members.forEach(function(m){
+            if(m.status==="ONLINE"){
+                online++;
             }
-        );
+        });
 
         status.textContent=
             members.size+
             " member"+
-            (
-                members.size===1
-                    ? ""
-                    : "s"
-            )+
+            (members.size===1 ? "" : "s")+
             ", "+
             online+
             " online";
-
     }
 
     function renderFeed(){
-
         const box=
-            document.getElementById(
-                "messages"
-            );
+            document.getElementById("messages");
 
         box.innerHTML="";
 
         let items;
 
         if(activeChat.type==="PUBLIC"){
-
             items=publicFeed;
-
         }else{
-
             items=
                 (
                     privateFeeds.get(
                         activeChat.conversationId
                     ) || []
-                ).map(
-                    function(m){
-
-                        return {
-                            kind:"chat",
-                            response:m
-                        };
-
-                    }
-                );
-
+                ).map(function(m){
+                    return {
+                        kind:"chat",
+                        response:m
+                    };
+                });
         }
 
         if(items.length===0){
-
             const empty=
-                document.createElement(
-                    "div"
-                );
+                document.createElement("div");
 
             empty.className="empty";
-
-            empty.textContent=
-                "No messages yet";
+            empty.textContent="No messages yet";
 
             box.appendChild(empty);
-
             return;
-
         }
 
         const showSender=
             activeChat.type==="PUBLIC";
 
-        items.forEach(
-            function(item){
-
-                if(item.kind==="system"){
-
-                    box.appendChild(
-                        buildSystemMessage(
-                            item.content
-                        )
-                    );
-
-                }else{
-
-                    box.appendChild(
-                        buildChatRow(
-                            item.response,
-                            showSender
-                        )
-                    );
-
-                }
-
+        items.forEach(function(item){
+            if(item.kind==="system"){
+                box.appendChild(
+                    buildSystemMessage(
+                        item.content
+                    )
+                );
+            }else{
+                box.appendChild(
+                    buildChatRow(
+                        item.response,
+                        showSender
+                    )
+                );
             }
-        );
+        });
 
         scrollToBottom();
-
     }
 
-    function buildChatRow(
-        response,
-        showSender
-    ){
-
+    function buildChatRow(response,showSender){
         const row=
-            document.createElement(
-                "div"
-            );
+            document.createElement("div");
 
         const isMine=
             Number(response.senderId)===
@@ -1409,30 +1136,21 @@
 
         row.className=
             "message-row"+
-            (
-                isMine
-                    ? " mine"
-                    : ""
-            );
+            (isMine ? " mine" : "");
 
         const message=
-            document.createElement(
-                "div"
-            );
+            document.createElement("div");
 
         message.className="message";
 
         if(!isMine && showSender){
-
             const known=
                 members.get(
                     Number(response.senderId)
                 );
 
             const sender=
-                document.createElement(
-                    "div"
-                );
+                document.createElement("div");
 
             sender.className="sender";
 
@@ -1442,23 +1160,17 @@
                 "User";
 
             message.appendChild(sender);
-
         }
 
         const text=
-            document.createElement(
-                "div"
-            );
+            document.createElement("div");
 
         text.className="message-text";
-
         text.textContent=
             response.content || "";
 
         const time=
-            document.createElement(
-                "div"
-            );
+            document.createElement("div");
 
         time.className="message-time";
 
@@ -1468,48 +1180,35 @@
             );
 
         message.appendChild(text);
-
         message.appendChild(time);
 
         row.appendChild(message);
 
         return row;
-
     }
 
     function buildSystemMessage(content){
-
         const wrapper=
-            document.createElement(
-                "div"
-            );
+            document.createElement("div");
 
-        wrapper.className=
-            "system-message";
+        wrapper.className="system-message";
 
         const span=
-            document.createElement(
-                "span"
-            );
+            document.createElement("span");
 
         span.textContent=content;
 
         wrapper.appendChild(span);
 
         return wrapper;
-
     }
 
     function sendMessage(){
-
         if(!stompClient || !connected){
-
             alert(
                 "WebSocket is not connected."
             );
-
             return;
-
         }
 
         const input=
@@ -1518,22 +1217,17 @@
             );
 
         if(!input){
-
             return;
-
         }
 
         const content=
             input.value.trim();
 
         if(!content){
-
             return;
-
         }
 
         if(activeChat.type==="PRIVATE"){
-
             stompClient.send(
                 "/app/private.sendMessage",
                 {},
@@ -1543,13 +1237,9 @@
                     content:content
                 })
             );
-
         }else{
-
             if(currentUser.role!=="ADMIN"){
-
                 return;
-
             }
 
             stompClient.send(
@@ -1559,21 +1249,15 @@
                     content:content
                 })
             );
-
         }
 
         input.value="";
-
         input.focus();
-
     }
 
     function addMember(member){
-
         if(!member || !member.id){
-
             return;
-
         }
 
         members.set(
@@ -1587,42 +1271,23 @@
         );
 
         renderMembers();
-
     }
 
     function compareMembers(a,b){
-
         if(a.role!==b.role){
-
-            return a.role==="ADMIN"
-                ? -1
-                : 1;
-
+            return a.role==="ADMIN" ? -1 : 1;
         }
 
         if(a.status!==b.status){
-
-            return a.status==="ONLINE"
-                ? -1
-                : 1;
-
+            return a.status==="ONLINE" ? -1 : 1;
         }
 
-        return a.name.localeCompare(
-            b.name
-        );
-
+        return a.name.localeCompare(b.name);
     }
 
-    function buildMemberItem(
-        member,
-        interactive
-    ){
-
+    function buildMemberItem(member,interactive){
         const item=
-            document.createElement(
-                "div"
-            );
+            document.createElement("div");
 
         item.className="member";
 
@@ -1641,19 +1306,11 @@
             interactive &&
             canChatWith(member)
         ){
-
-            item.classList.add(
-                "clickable"
-            );
+            item.classList.add("clickable");
 
             item.onclick=function(){
-
-                openPrivateChat(
-                    member.id
-                );
-
+                openPrivateChat(member.id);
             };
-
         }
 
         if(
@@ -1661,92 +1318,65 @@
             activeChat.type==="PRIVATE" &&
             activeChat.peerId===member.id
         ){
-
-            item.classList.add(
-                "active"
-            );
-
+            item.classList.add("active");
         }
 
         const circle=
-            document.createElement(
-                "div"
-            );
+            document.createElement("div");
 
-        circle.className=
-            "member-circle";
+        circle.className="member-circle";
 
         circle.textContent=
-            (
-                member.name || "?"
-            )
+            (member.name || "?")
                 .charAt(0)
                 .toUpperCase();
 
         const info=
-            document.createElement(
-                "div"
-            );
+            document.createElement("div");
 
         info.className="member-info";
 
         const name=
-            document.createElement(
-                "div"
-            );
+            document.createElement("div");
 
         name.className="member-name";
 
         name.textContent=
             member.name+
             (
-                member.id===
-                Number(currentUser.id)
+                member.id===Number(currentUser.id)
                     ? " (You)"
                     : ""
             );
 
         const role=
-            document.createElement(
-                "div"
-            );
+            document.createElement("div");
 
         role.className="member-role";
-
-        role.textContent=
-            member.role;
+        role.textContent=member.role;
 
         info.appendChild(name);
-
         info.appendChild(role);
 
         item.appendChild(circle);
-
         item.appendChild(info);
 
         if(
             interactive &&
             unread.get(member.id)
         ){
-
             const badge=
-                document.createElement(
-                    "div"
-                );
+                document.createElement("div");
 
             badge.className="unread";
-
             badge.textContent=
                 unread.get(member.id);
 
             item.appendChild(badge);
-
         }
 
         const dot=
-            document.createElement(
-                "div"
-            );
+            document.createElement("div");
 
         dot.className=
             "status-dot"+
@@ -1759,11 +1389,9 @@
         item.appendChild(dot);
 
         return item;
-
     }
 
     function renderMembers(){
-
         const list=
             document.getElementById(
                 "membersList"
@@ -1782,57 +1410,40 @@
         const sorted=
             Array.from(
                 members.values()
-            ).sort(
-                compareMembers
-            );
+            ).sort(compareMembers);
 
         list.innerHTML="";
-
         sidebar.innerHTML="";
 
-        sorted.forEach(
-            function(member){
+        sorted.forEach(function(member){
+            list.appendChild(
+                buildMemberItem(
+                    member,
+                    false
+                )
+            );
 
-                list.appendChild(
+            if(
+                !memberFilter ||
+                member.name
+                    .toLowerCase()
+                    .indexOf(memberFilter)!==-1
+            ){
+                sidebar.appendChild(
                     buildMemberItem(
                         member,
-                        false
+                        true
                     )
                 );
-
-                if(
-                    !memberFilter ||
-                    member.name
-                        .toLowerCase()
-                        .indexOf(
-                            memberFilter
-                        )!==-1
-                ){
-
-                    sidebar.appendChild(
-                        buildMemberItem(
-                            member,
-                            true
-                        )
-                    );
-
-                }
-
             }
-        );
+        });
 
-        count.textContent=
-            members.size;
+        count.textContent=members.size;
 
         updateSubtitle();
-
     }
 
-    function updateLastMessage(
-        message,
-        time
-    ){
-
+    function updateLastMessage(message,time){
         document.getElementById(
             "lastMessage"
         ).textContent=
@@ -1842,34 +1453,23 @@
             "lastTime"
         ).textContent=
             formatTime(time);
-
     }
 
-    function updateConnectionStatus(
-        isConnected
-    ){
-
+    function updateConnectionStatus(isConnected){
         if(isConnected){
-
             connected=true;
-
         }
 
         updateSubtitle();
-
     }
 
     function formatTime(dateTime){
-
         if(!dateTime){
-
             return "";
-
         }
 
         const date=
             Array.isArray(dateTime)
-
                 ? new Date(
                     dateTime[0],
                     dateTime[1]-1,
@@ -1878,13 +1478,10 @@
                     dateTime[4] || 0,
                     dateTime[5] || 0
                 )
-
                 : new Date(dateTime);
 
         if(isNaN(date.getTime())){
-
             return "";
-
         }
 
         return date.toLocaleTimeString(
@@ -1894,11 +1491,9 @@
                 minute:"2-digit"
             }
         );
-
     }
 
     function scrollToBottom(){
-
         const messages=
             document.getElementById(
                 "messages"
@@ -1906,123 +1501,115 @@
 
         messages.scrollTop=
             messages.scrollHeight;
-
     }
 
     function toggleMembers(){
-
-        document
-            .getElementById("membersPanel")
-            .classList.toggle("show");
-
+        document.getElementById(
+            "membersPanel"
+        ).classList.toggle("show");
     }
 
-    function logout(){
+    async function logout(){
+        if(loggingOut){
+            return;
+        }
 
         loggingOut=true;
 
+        const accessToken=
+            sessionStorage.getItem(
+                "accessToken"
+            );
+
+        const refreshToken=
+            sessionStorage.getItem(
+                "refreshToken"
+            );
+
         try{
-
-            if(
-                stompClient &&
-                connected
-            ){
-
+            if(stompClient && connected){
                 stompClient.disconnect(
                     function(){}
                 );
+            }
+        }catch(error){
+            console.error(error);
+        }
 
+        try{
+            const headers={
+                "Refresh-Token":
+                    refreshToken || ""
+            };
+
+            if(accessToken){
+                headers["Authorization"]=
+                    "Bearer "+accessToken;
             }
 
+            const response=
+                await fetch(
+                    LOGOUT_URL,
+                    {
+                        method:"POST",
+                        headers:headers
+                    }
+                );
+
+            console.log(
+                "Logout HTTP Status:",
+                response.status
+            );
         }catch(error){
-
-            console.error(error);
-
+            console.error(
+                "Logout API error:",
+                error
+            );
         }
 
         clearLoginData();
-
     }
 
     function clearLoginData(){
-
         if(membersTimer){
-
-            clearInterval(
-                membersTimer
-            );
-
+            clearInterval(membersTimer);
             membersTimer=null;
-
         }
 
         if(reconnectTimer){
-
-            clearTimeout(
-                reconnectTimer
-            );
-
+            clearTimeout(reconnectTimer);
             reconnectTimer=null;
-
         }
 
         loggingOut=true;
 
-        sessionStorage.removeItem(
-            "accessToken"
-        );
+        sessionStorage.removeItem("accessToken");
+        sessionStorage.removeItem("refreshToken");
+        sessionStorage.removeItem("userId");
+        sessionStorage.removeItem("userName");
+        sessionStorage.removeItem("userEmail");
+        sessionStorage.removeItem("userContact");
+        sessionStorage.removeItem("userRole");
+        sessionStorage.removeItem("userStatus");
 
-        sessionStorage.removeItem(
-            "refreshToken"
-        );
-
-        sessionStorage.removeItem(
-            "userId"
-        );
-
-        sessionStorage.removeItem(
-            "userName"
-        );
-
-        sessionStorage.removeItem(
-            "userEmail"
-        );
-
-        sessionStorage.removeItem(
-            "userContact"
-        );
-
-        sessionStorage.removeItem(
-            "userRole"
-        );
-
-        sessionStorage.removeItem(
-            "userStatus"
+        console.log(
+            "Redirecting to login page:",
+            LOGIN_PAGE
         );
 
         window.location.replace(
-            "login.html"
+            LOGIN_PAGE
         );
-
     }
 
     window.addEventListener(
         "beforeunload",
         function(){
-
-            if(
-                stompClient &&
-                connected
-            ){
-
+            if(stompClient && connected){
                 stompClient.disconnect();
-
             }
-
         }
     );
-
 </script>
-
 </body>
 </html>

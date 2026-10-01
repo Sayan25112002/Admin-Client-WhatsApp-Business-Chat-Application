@@ -542,6 +542,9 @@
      JAVASCRIPT
      ========================================================== -->
 <script>
+    // Remember the exact URL of this page so logout can return here
+    sessionStorage.setItem("loginPageUrl", window.location.href.split("#")[0]);
+
     const API_BASE_URL =
         "http://localhost:8080";
     // ======================================================
@@ -839,7 +842,7 @@
                 setTimeout(
                     () => {
                         window.location.href =
-                            "/templates/groupchat.html";
+                            "groupchat.html";
                     },
                     500
                 );

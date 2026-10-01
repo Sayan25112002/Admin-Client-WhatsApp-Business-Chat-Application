@@ -6,7 +6,6 @@ import com.WhatsApp.AdminUserChatMessage.dto.responseDto.LoginResponseDto;
 import com.WhatsApp.AdminUserChatMessage.dto.responseDto.RegisterResponseDto;
 import com.WhatsApp.AdminUserChatMessage.service.AuthenticationService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

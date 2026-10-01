@@ -2,7 +2,6 @@ package com.WhatsApp.AdminUserChatMessage.controller;
 
 import com.WhatsApp.AdminUserChatMessage.service.RefreshTokenService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

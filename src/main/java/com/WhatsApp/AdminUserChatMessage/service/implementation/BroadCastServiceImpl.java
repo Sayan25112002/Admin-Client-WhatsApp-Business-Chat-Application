@@ -10,10 +10,14 @@ import com.WhatsApp.AdminUserChatMessage.repository.BroadCastRepository;
 import com.WhatsApp.AdminUserChatMessage.repository.UserRepository;
 import com.WhatsApp.AdminUserChatMessage.service.BroadCastService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.AccessDeniedException;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +36,21 @@ public class BroadCastServiceImpl implements BroadCastService {
         broadCastMessage.setCreatedAt(LocalDateTime.now());
         broadCastRepository.save(broadCastMessage);
         return broadCastMapper.toBroadCastMessageResponseDto(broadCastMessage);
+    }
+
+    @Override
+    public List<BroadCastMessageResponseDto> getPublicMessages(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(()-> new RuntimeException("User not found"));
+        LocalDateTime joinedAt = user.getPublicChatJoinedAt();
+        if(joinedAt==null){
+            return List.of();
+        }
+        return broadCastRepository
+                .findByCreatedAtAfterOrderByIdAsc(joinedAt)
+                .stream()
+                .map(broadCastMapper::toBroadCastMessageResponseDto)
+                .toList();
     }
 
 }

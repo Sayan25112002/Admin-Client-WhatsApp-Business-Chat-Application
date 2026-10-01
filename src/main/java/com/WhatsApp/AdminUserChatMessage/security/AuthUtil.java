@@ -53,25 +53,4 @@ public class AuthUtil {
                 .getPayload();
     }
 
-    public String getEmailFromToken(String token) {
-        return getClaimsFromToken(token).getSubject();
-    }
-
-    public Date getExpirationDateFromToken(String token) {
-        return getClaimsFromToken(token).getExpiration();
-    }
-
-    public Boolean isTokenExpired(String token) {
-        try {
-            return getClaimsFromToken(token).getExpiration().before(new Date());
-        }
-        catch (Exception e) {
-            return false;
-        }
-    }
-
-    public String getTokenType(String token) {
-        return getClaimsFromToken(token).get("tokenType").toString();
-    }
-
 }

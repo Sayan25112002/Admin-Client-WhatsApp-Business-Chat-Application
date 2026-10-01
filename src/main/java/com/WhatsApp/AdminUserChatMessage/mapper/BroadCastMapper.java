@@ -4,16 +4,14 @@ import com.WhatsApp.AdminUserChatMessage.dto.requestDto.BroadCastMessageRequestD
 import com.WhatsApp.AdminUserChatMessage.dto.responseDto.BroadCastMessageResponseDto;
 import com.WhatsApp.AdminUserChatMessage.entity.BroadCastMessage;
 import org.mapstruct.Mapper;
-
-import java.util.List;
+import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface BroadCastMapper {
 
     BroadCastMessage toBroadCastMessage(BroadCastMessageRequestDto broadCastMessageRequestDto);
 
+    @Mapping(source = "user.name", target = "senderName")
     BroadCastMessageResponseDto toBroadCastMessageResponseDto(BroadCastMessage broadCastMessage);
-
-    List<BroadCastMessageResponseDto> toBroadCastMessageResponseDtoList(List<BroadCastMessage> broadCastMessages);
 
 }

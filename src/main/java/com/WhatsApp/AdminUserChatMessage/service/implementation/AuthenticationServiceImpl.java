@@ -44,6 +44,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         if(!passwordEncoder.matches(loginRequestDto.getPassword(),user.getPassword())){
             throw new UsernameNotFoundException("Wrong Password");
         }
+        if(user.getPublicChatJoinedAt() == null){
+            user.setPublicChatJoinedAt(LocalDateTime.now());
+            userRepository.save(user);
+        }
         String accessToken = authUtil.generateAccessToken(user);
         String refreshToken = authUtil.generateRefreshToken(user);
         refreshTokenService.saveRefreshToken(user,refreshToken);

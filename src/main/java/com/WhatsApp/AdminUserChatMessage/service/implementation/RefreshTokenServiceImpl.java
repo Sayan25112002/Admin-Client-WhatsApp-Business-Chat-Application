@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -51,13 +50,6 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
                 .orElseThrow(()-> new RuntimeException("RefreshToken not found"));
         refreshTokenEntity.setRevoked(true);
         refreshTokenRepository.save(refreshTokenEntity);
-    }
-
-    @Override
-    public void revokeAllRefreshTokens(User user) {
-        List<RefreshToken> refreshTokens = refreshTokenRepository.findAllByUser(user);
-        refreshTokens.forEach(refreshToken->refreshToken.setRevoked(true));
-        refreshTokenRepository.saveAll(refreshTokens);
     }
 
 }

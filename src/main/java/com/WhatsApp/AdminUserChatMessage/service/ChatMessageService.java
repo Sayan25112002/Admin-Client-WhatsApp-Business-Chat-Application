@@ -8,4 +8,6 @@ public interface ChatMessageService {
 
     ChatMessageResponseDto sendMessage(ChatMessageRequestDto chatMessageRequestDto, Long userId, Role role);
 
+    void sendToConversationParticipants(ChatMessageResponseDto chatMessageResponseDto);
+
 }

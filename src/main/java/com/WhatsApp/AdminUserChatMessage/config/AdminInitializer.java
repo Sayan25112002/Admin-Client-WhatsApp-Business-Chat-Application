@@ -27,7 +27,7 @@ public class AdminInitializer {
                     .email("admin123@gmail.com")
                     .password(passwordEncoder.encode("Admin@123"))
                     .role(Role.ADMIN)
-                    .status(UserStatus.ONLINE)
+                    .status(UserStatus.OFFLINE)
                     .createdAt(LocalDateTime.now())
                     .build();
             userRepository.save(user);
