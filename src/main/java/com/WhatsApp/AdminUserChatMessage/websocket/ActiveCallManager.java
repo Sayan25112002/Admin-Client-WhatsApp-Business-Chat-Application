@@ -8,26 +8,49 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 public class ActiveCallManager {
 
-    private final Map<Long, String> participants = new ConcurrentHashMap<>();
+    private final Map<String, Map<Long,String>> activeCalls = new ConcurrentHashMap<>();
 
-    public void addParticipant(Long userId, String userName) {
-        participants.put(userId, userName);
+    public void createCall(String callId){
+        activeCalls.putIfAbsent(callId, new ConcurrentHashMap<>());
     }
 
-    public void removeParticipant(Long userId) {
+    public void addParticipant(String callId, Long userId, String userName) {
+        createCall(callId);
+        activeCalls.get(callId).put(userId, userName);
+    }
+
+    public void removeParticipant(String callId, Long userId) {
+        Map<Long, String> participants = activeCalls.get(callId);
         participants.remove(userId);
+        if(participants.isEmpty()){
+            activeCalls.remove(callId);
+        }
     }
 
-    public Map<Long, String> getParticipants() {
-        return participants;
+    public Map<Long, String> getParticipants(String callId) {
+        return activeCalls.getOrDefault(callId, new ConcurrentHashMap<>());
     }
 
-    public Boolean isParticipant(Long userId) {
-        return participants.containsKey(userId);
+    public Boolean isParticipant(String callId, Long userId) {
+        Map<Long, String> participants = activeCalls.get(callId);
+        return participants!=null && participants.containsKey(userId);
     }
 
-    public Boolean isCallActive() {
-        return !participants.isEmpty();
+    public Boolean isCallActive(String callId) {
+        Map<Long, String> participants = activeCalls.get(callId);
+        return participants!=null && participants.isEmpty();
+    }
+
+    public Boolean callExists(String callId) {
+        return activeCalls.containsKey(callId);
+    }
+
+    public void removeCall(String callId) {
+        activeCalls.remove(callId);
+    }
+
+    public Map<String, Map<Long, String>> getActiveCalls() {
+        return activeCalls;
     }
 
 }
