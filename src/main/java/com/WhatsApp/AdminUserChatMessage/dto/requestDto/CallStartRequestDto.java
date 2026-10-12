@@ -20,4 +20,6 @@ public class CallStartRequestDto {
 
     private CallType callType;
 
+    private Long receiverId;
+
 }

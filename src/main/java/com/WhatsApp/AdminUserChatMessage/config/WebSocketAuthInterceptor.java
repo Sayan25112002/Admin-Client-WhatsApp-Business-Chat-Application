@@ -52,7 +52,7 @@ public class WebSocketAuthInterceptor implements ChannelInterceptor {
         }
         if(accessor != null && StompCommand.SUBSCRIBE.equals(accessor.getCommand())) {
             String destination = accessor.getDestination();
-            if (!"/topic/public".equals(destination) && !"/user/queue/private".equals(destination)) {
+            if (destination==null || !(destination.equals("/topic/public") || destination.equals("/user/queue/private") || destination.matches("/topic/call/\\d+"))) {
                 log.warn("Blocked SUBSCRIBE to {}", destination);
                 return null;
             }

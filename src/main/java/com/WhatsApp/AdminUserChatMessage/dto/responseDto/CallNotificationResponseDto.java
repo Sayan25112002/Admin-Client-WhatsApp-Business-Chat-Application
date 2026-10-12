@@ -1,5 +1,6 @@
 package com.WhatsApp.AdminUserChatMessage.dto.responseDto;
 
+import com.WhatsApp.AdminUserChatMessage.entity.type.CallType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,5 +23,7 @@ public class CallNotificationResponseDto {
     private String status;
 
     private String callId;
+
+    private CallType callType;
 
 }

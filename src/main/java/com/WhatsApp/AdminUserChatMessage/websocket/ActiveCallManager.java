@@ -21,9 +21,11 @@ public class ActiveCallManager {
 
     public void removeParticipant(String callId, Long userId) {
         Map<Long, String> participants = activeCalls.get(callId);
+        if(participants == null)
+            return;
         participants.remove(userId);
         if(participants.isEmpty()){
-            activeCalls.remove(callId);
+            activeCalls.remove(callId, participants);
         }
     }
 
@@ -38,7 +40,7 @@ public class ActiveCallManager {
 
     public Boolean isCallActive(String callId) {
         Map<Long, String> participants = activeCalls.get(callId);
-        return participants!=null && participants.isEmpty();
+        return participants!=null && !participants.isEmpty();
     }
 
     public Boolean callExists(String callId) {
